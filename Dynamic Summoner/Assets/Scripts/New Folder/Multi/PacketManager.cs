@@ -12,15 +12,29 @@ public struct ExecutionData
     public int playerNumber;
     public int summonDeckNumber;
     public Vector3 position;
-    public int SkillNumber;
+    public int skillNumber;
 }
 
-public static class PacketManager
+public struct EnemyDeckData
+{
+    public bool isReceived;
+    public int enemyLevel;
+    public int[] summonNumber;
+    public int[] summonLevel;
+}
+
+public static class MultiBattleDataManager
 {
     public static int executionDataOrder { get; private set; }
 
     private static Queue<ExecutionData> executionDatas;
     private static List<ExecutionData> outOfSequenceDatas;
+    public static EnemyDeckData enemyDeckData = new EnemyDeckData()
+    {
+        isReceived = false,
+        summonNumber = new int[4],
+        summonLevel = new int[4],
+    };
 
     public static void EnqueueExecutionData(ExecutionData executionData)
     {

@@ -56,8 +56,6 @@ public class Client
 
     public void Start()
     {   
-
-
         IPEndPoint ipEndPoint = new IPEndPoint(IPAddress.Parse("192.168.0.179"), Port);
         receiveSocket.Connect(ipEndPoint);
 
@@ -66,6 +64,7 @@ public class Client
         Setting.GameMode = GameMode.Multi;
 
         receiveSocket.ReceiveAsync(socketAsyncEventArgs);
+        MultiBattle.instance.StartMakingEnemyDeck();
     }
 
     private void ClassifyReceivedPacket()
@@ -87,17 +86,14 @@ public class Client
     {
         Debug.Log(LogType.Trace, "ReceiveEnemyDeckData");
 
-        int enemyLevel = ByteConverter.ToInt(receiveBuffer, 8);
-
-        Preparation.InitMultiEnemySummoner(enemyLevel, null);
-
-        int summonNumber, summonLevel;
-        for (int index = 0; index < 4; index++)
+        MultiBattleDataManager.enemyDeckData.enemyLevel = ByteConverter.ToInt(receiveBuffer, 8);
+        for(int index = 0; index < Setting.DeckCount; index++)
         {
-            summonNumber = ByteConverter.ToInt(receiveBuffer, 12 + 8 * index);
-            summonLevel = ByteConverter.ToInt(receiveBuffer, 16 + 8 * index);
-            DeckSetting.SetMultiEnemyDeck(summonNumber, summonLevel);
+            MultiBattleDataManager.enemyDeckData.summonNumber[index] = ByteConverter.ToInt(receiveBuffer, 12 + index * 8);
+            MultiBattleDataManager.enemyDeckData.summonLevel[index] = ByteConverter.ToInt(receiveBuffer, 16 + index * 8);
         }
+
+        MultiBattleDataManager.enemyDeckData.isReceived = true;
 
         SendReadyCompletePacket();
     }
@@ -111,7 +107,7 @@ public class Client
     {
         int executionOrder = ByteConverter.ToInt(receiveBuffer, 8);
 
-        if (executionOrder < PacketManager.executionDataOrder)
+        if (executionOrder < MultiBattleDataManager.executionDataOrder)
             return;
 
         ExecutionData executionData = new ExecutionData()
@@ -120,11 +116,11 @@ public class Client
             order = executionOrder,
         };
 
-        if (PacketManager.executionDataOrder == executionOrder)
-            PacketManager.EnqueueExecutionData(executionData);
+        if (MultiBattleDataManager.executionDataOrder == executionOrder)
+            MultiBattleDataManager.EnqueueExecutionData(executionData);
 
-        if (PacketManager.executionDataOrder < executionOrder)
-            PacketManager.AddOutOfSequenceData(executionData);
+        if (MultiBattleDataManager.executionDataOrder < executionOrder)
+            MultiBattleDataManager.AddOutOfSequenceData(executionData);
     }
 
     private void ReceiveSummon()
@@ -132,7 +128,7 @@ public class Client
         int executionOrder = ByteConverter.ToInt(receiveBuffer, 8);
         int playerNumber = ByteConverter.ToInt(receiveBuffer, 12);
 
-        if (executionOrder < PacketManager.executionDataOrder || playerNumber != this.playerNumber)
+        if (executionOrder < MultiBattleDataManager.executionDataOrder || playerNumber != this.playerNumber)
             return;
 
         int summonDeckNumber = ByteConverter.ToInt(receiveBuffer, 16);
@@ -148,11 +144,11 @@ public class Client
             position = new Vector3(xPos, yPos)
         };
 
-        if (PacketManager.executionDataOrder == executionOrder)
-            PacketManager.EnqueueExecutionData(executionData);
+        if (MultiBattleDataManager.executionDataOrder == executionOrder)
+            MultiBattleDataManager.EnqueueExecutionData(executionData);
 
-        if (PacketManager.executionDataOrder < executionOrder)
-            PacketManager.AddOutOfSequenceData(executionData);
+        if (MultiBattleDataManager.executionDataOrder < executionOrder)
+            MultiBattleDataManager.AddOutOfSequenceData(executionData);
     }
 
     private void ReceiveSkill()

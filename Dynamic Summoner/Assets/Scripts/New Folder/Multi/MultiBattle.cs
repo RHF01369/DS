@@ -32,6 +32,26 @@ public class MultiBattle : MonoBehaviour, IPatternable
         isPlaying = true;
     }
 
+    public void StartMakingEnemyDeck()
+    {
+        StartCoroutine(MakeEnemyDeck());
+    }
+
+    private IEnumerator MakeEnemyDeck()
+    {
+        while(true)
+        {
+            if(MultiBattleDataManager.enemyDeckData.isReceived)
+            {
+                Preparation.InitMultiEnemySummoner(MultiBattleDataManager.enemyDeckData.enemyLevel, null);
+                for(int index = 0; index < Setting.DeckCount; index++)
+                    DeckSetting.SetMultiEnemyDeck(MultiBattleDataManager.enemyDeckData.summonNumber[index], MultiBattleDataManager.enemyDeckData.summonLevel[index]);
+                yield break;
+            }
+            yield return new WaitForSeconds(0.1f);
+        }
+    }
+
     public static void OnAttack()
     {
         for (int index = 0; index < SpawnManager.Units.Count; index++)
