@@ -1,0 +1,59 @@
+{
+  "project_info": {
+    "project_number": "656213863591",
+    "firebase_url": "https://dynamic-summoner-47605617.firebaseio.com",
+    "project_id": "dynamic-summoner-47605617",
+    "storage_bucket": "dynamic-summoner-47605617.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:656213863591:android:8da0a12e7893a59f",
+        "android_client_info": {
+          "package_name": "com.dynamic.summoner"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "656213863591-bmrpcd46qfqvmfpqlt1ckfcb9v3v7nlt.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "656213863591-e1uj4mg8otrutd137qonnn7v8k5p2r6i.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "656213863591-b2o24gqkaksdbqnnea1narjmloa8h0ac.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.dynamic.summoner",
+            "certificate_hash": "1eb16ce4aaaf8c9ba0997eff9df05ea489e2173d"
+          }
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDVYtx1Pjpk5pAObtB4EuokkXuMj_ttsa4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "656213863591-bmrpcd46qfqvmfpqlt1ckfcb9v3v7nlt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

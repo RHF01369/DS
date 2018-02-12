@@ -1,0 +1,272 @@
+fileFormatVersion: 2
+guid: 0a694b01e3e09694c95a520680972bfc
+timeCreated: 1481356529
+licenseType: Free
+TextureImporter:
+  fileIDToRecycleName:
+    21300000: Long Left PlatForm
+    21300002: Middle Left PlatForm
+    21300004: Short Left PlatForm
+    21300006: Short Right PlatForm
+    21300008: Middle Right PlatForm
+    21300010: Long Right PlatForm
+    21300012: Long Hill
+    21300014: Long PlatForm
+    21300016: Middle PlatForm
+    21300018: Short PlatForm
+    21300020: Middle Hill
+    21300022: Short Hill
+    21300024: Long Hill Left
+    21300026: Middle Hill Left
+    21300028: Short Hill Left
+    21300030: Short Hill RIght
+    21300032: Middle Hill Right
+    21300034: Long Hill Right
+  serializedVersion: 2
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 1
+    linearTexture: 0
+    correctGamma: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 0
+  cubemapConvolution: 0
+  cubemapConvolutionSteps: 7
+  cubemapConvolutionExponent: 1.5
+  seamlessCubemap: 0
+  textureFormat: -1
+  maxTextureSize: 2048
+  textureSettings:
+    filterMode: -1
+    aniso: 16
+    mipBias: -1
+    wrapMode: 1
+  nPOTScale: 0
+  lightmap: 0
+  rGBM: 0
+  compressionQuality: 50
+  allowsAlphaSplitting: 0
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spritePixelsToUnits: 100
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  buildTargetSettings: []
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Long Left PlatForm
+      rect:
+        serializedVersion: 2
+        x: 22
+        y: 600
+        width: 76
+        height: 236
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Middle Left PlatForm
+      rect:
+        serializedVersion: 2
+        x: 118
+        y: 600
+        width: 76
+        height: 160
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Short Left PlatForm
+      rect:
+        serializedVersion: 2
+        x: 208
+        y: 600
+        width: 76
+        height: 88
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Short Right PlatForm
+      rect:
+        serializedVersion: 2
+        x: 338
+        y: 600
+        width: 64
+        height: 88
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Middle Right PlatForm
+      rect:
+        serializedVersion: 2
+        x: 422
+        y: 600
+        width: 64
+        height: 164
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Long Right PlatForm
+      rect:
+        serializedVersion: 2
+        x: 504
+        y: 600
+        width: 64
+        height: 240
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Long Hill Left
+      rect:
+        serializedVersion: 2
+        x: 600
+        y: 1
+        width: 598
+        height: 298
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Long PlatForm
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 300
+        width: 300
+        height: 238
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Middle PlatForm
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 117
+        width: 300
+        height: 162
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Short PlatForm
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 300
+        height: 90
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Middle Hill Left
+      rect:
+        serializedVersion: 2
+        x: 600
+        y: 300
+        width: 598
+        height: 299
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Short Hill Left
+      rect:
+        serializedVersion: 2
+        x: 600
+        y: 600
+        width: 599
+        height: 300
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Short Hill RIght
+      rect:
+        serializedVersion: 2
+        x: 1200
+        y: 600
+        width: 600
+        height: 300
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Middle Hill Right
+      rect:
+        serializedVersion: 2
+        x: 1199
+        y: 300
+        width: 601
+        height: 299
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Long Hill Right
+      rect:
+        serializedVersion: 2
+        x: 1199
+        y: 1
+        width: 599
+        height: 298
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    outline: []
+  spritePackingTag: 
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

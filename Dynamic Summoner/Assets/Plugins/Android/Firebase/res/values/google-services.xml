@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+  <string name="firebase_database_url" translatable="false">https://dynamic-summoner-47605617.firebaseio.com</string>
+  <string name="gcm_defaultSenderId" translatable="false">656213863591</string>
+  <string name="google_storage_bucket" translatable="false">dynamic-summoner-47605617.appspot.com</string>
+  <string name="project_id" translatable="false">dynamic-summoner-47605617</string>
+  <string name="google_api_key" translatable="false">AIzaSyDVYtx1Pjpk5pAObtB4EuokkXuMj_ttsa4</string>
+  <string name="google_crash_reporting_api_key" translatable="false">AIzaSyDVYtx1Pjpk5pAObtB4EuokkXuMj_ttsa4</string>
+  <string name="google_app_id" translatable="false">1:656213863591:android:8da0a12e7893a59f</string>
+  <string name="default_web_client_id" translatable="false">656213863591-bmrpcd46qfqvmfpqlt1ckfcb9v3v7nlt.apps.googleusercontent.com</string>
+  <string name="default_web_client_id" translatable="false">656213863591-e1uj4mg8otrutd137qonnn7v8k5p2r6i.apps.googleusercontent.com</string>
+</resources>
