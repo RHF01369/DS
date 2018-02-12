@@ -7,6 +7,7 @@ using UnityEngine;
 
 public enum PacketType
 {
+    PlayerNumber,
     Attack, Summon, Skill,
     EnemyDeckData, DeckDataRequest,
     ReadyComplete, BattleStart
@@ -38,6 +39,7 @@ public class Client
 
         packetTypeToAction = new Dictionary<PacketType, Action>()
         {
+            {PacketType.PlayerNumber,       ReceivePlayerNumber},
             {PacketType.Attack,             ReceiveAttack},
             {PacketType.Summon,             ReceiveSummon},
             {PacketType.Skill,              ReceiveSkill},
@@ -75,6 +77,11 @@ public class Client
         Debug.Log(LogType.Trace, "ClassifyReceivedPacket {0}", packetType);
 
         packetTypeToAction[packetType]();
+    }
+
+    private void ReceivePlayerNumber()
+    {
+        playerNumber = ByteConverter.ToInt(receiveBuffer, 4);
     }
 
     private void ReceiveDeckDataRequest()
@@ -130,7 +137,7 @@ public class Client
         int executionOrder = ByteConverter.ToInt(receiveBuffer, 8);
         int playerNumber = ByteConverter.ToInt(receiveBuffer, 12);
 
-        if (executionOrder < MultiBattleDataManager.executionDataOrder || playerNumber != this.playerNumber)
+        if (executionOrder < MultiBattleDataManager.executionDataOrder)
             return;
 
         int summonDeckNumber = ByteConverter.ToInt(receiveBuffer, 16);
