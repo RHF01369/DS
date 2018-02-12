@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class MultiBattle : MonoBehaviour, IPatternable
 {
-    private static MultiBattle instance;
+    public static MultiBattle instance { get; private set; }
 
     public static bool isPlaying { get; private set; }
     public static bool isNetworkingDisconnected;

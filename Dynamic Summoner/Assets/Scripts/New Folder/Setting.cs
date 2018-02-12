@@ -4,11 +4,12 @@ using UnityEngine;
 
 public enum GameState { Init, Main, Battle }
 
-public enum GameMode { Ready, Single, Challenge }
+public enum GameMode { Ready, Single, Challenge, Multi }
 
 public struct GameSetting
 {
     public GameState gameState;
+    public GameMode gameMode;
 }
 
 public struct BattleSetting
@@ -49,6 +50,12 @@ public class Setting : MonoBehaviour
     {
         get { return instance.gameSetting.gameState; }
         set { instance.gameSetting.gameState = value; }
+    }
+
+    public static GameMode GameMode
+    {
+        get { return instance.gameSetting.gameMode; }
+        set { instance.gameSetting.gameMode = value; }
     }
 
     public static float AttackCool

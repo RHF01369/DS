@@ -4,7 +4,6 @@ using System.Net.Sockets;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Threading.Tasks;
 
 public enum PacketType
 {
@@ -48,21 +47,39 @@ public class Client
         IPEndPoint ipEndPoint = new IPEndPoint(IPAddress.Parse("192.168.0.179"), Port);
         serverSocket.Connect(ipEndPoint);
 
-        ReceivePacket();
+
+        Setting.GameState = GameState.Battle;
+        Setting.GameMode = GameMode.Multi;
+
+        MultiBattle.instance.StartCoroutine(ReceivePacket());
     }
 
-    private void ReceivePacket()
+
+    IEnumerator ReceivePacket()
     {
         Debug.Log(LogType.Trace, "ReceivePacket");
-        Task receiveTask = Task.Run(() => {
+       
+        while(Setting.GameMode == GameMode.Multi && Setting.GameState == GameState.Battle)
+        {
             serverSocket.Receive(receiveBuffer, 0, receiveBuffer.Length, SocketFlags.None);
-        });
 
-        receiveTask.ContinueWith((result) => {
-            ReceivePacket();
             ClassifyReceivedPacket();
-        });
+            yield return null;
+        }
     }
+
+    //private void ReceivePacket()
+    //{
+    //    Debug.Log(LogType.Trace, "ReceivePacket");
+    //    Task receiveTask = Task.Run(() => {
+    //        serverSocket.Receive(receiveBuffer, 0, receiveBuffer.Length, SocketFlags.None);
+    //    });
+
+    //    receiveTask.ContinueWith((result) => {
+    //        ReceivePacket();
+    //        ClassifyReceivedPacket();
+    //    });
+    //}
 
     private void ClassifyReceivedPacket()
     {
