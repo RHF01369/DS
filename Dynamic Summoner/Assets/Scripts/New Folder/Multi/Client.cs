@@ -64,6 +64,8 @@ public class Client
         Setting.GameMode = GameMode.Multi;
 
         receiveSocket.ReceiveAsync(socketAsyncEventArgs);
+
+        MultiBattle.Initialize(this);
         MultiBattle.instance.StartMakingEnemyDeck();
     }
 
