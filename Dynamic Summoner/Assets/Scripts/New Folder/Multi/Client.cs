@@ -52,8 +52,8 @@ public class Client
     private void ReceivePacket(object sender, SocketAsyncEventArgs e)
     {
         //throw new NotImplementedException();
-        ClassifyReceivedPacket();
         receiveSocket.ReceiveAsync(e);
+        ClassifyReceivedPacket();
     }
 
     public void Start()
