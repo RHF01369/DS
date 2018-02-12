@@ -9,8 +9,8 @@ public struct ExecutionData
     public ExecutionType type;
 
     public int order;
-    public int playerNumber;
-    public int summonDeckNumber;
+    public bool isMine;
+    public int summonDeckIndex;
     public Vector3 position;
     public int skillNumber;
 }

@@ -101,6 +101,8 @@ public class Client
     private void ReceiveBattleStart()
     {
         Debug.Log(LogType.Trace, "ReceiveBattleStart");
+
+        MultiBattle.instance.StartBattle();
     }
 
     private void ReceiveAttack()
@@ -139,8 +141,9 @@ public class Client
         {
             type = ExecutionType.Summon,
             order = executionOrder,
+            isMine = this.playerNumber == playerNumber ? true : false,
 
-            summonDeckNumber = summonDeckNumber,
+            summonDeckIndex = summonDeckNumber,
             position = new Vector3(xPos, yPos)
         };
 

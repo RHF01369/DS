@@ -7,15 +7,11 @@ public class MultiBattle : MonoBehaviour, IPatternable
 {
     public static MultiBattle instance { get; private set; }
 
-    public static bool isPlaying { get; private set; }
-    public static bool isNetworkingDisconnected;
-
     private Client client;
 
     private void Awake()
     {
         instance = this;
-        isNetworkingDisconnected = false;
     }
 
     public static void Initialize(Client client)
@@ -25,11 +21,11 @@ public class MultiBattle : MonoBehaviour, IPatternable
         instance.client = client;
     }
 
-    public static void StartBattle()
+    public void StartBattle()
     {
-        Debug.Log(LogType.Trace, "StartBattle");
+        Debug.Log(LogType.Trace, "MultiBattle StartBattle");
 
-        isPlaying = true;
+        StartCoroutine(ExecuteCommand());
     }
 
     public void StartMakingEnemyDeck()
@@ -52,8 +48,38 @@ public class MultiBattle : MonoBehaviour, IPatternable
         }
     }
 
-    public static void OnAttack()
+    private IEnumerator ExecuteCommand()
     {
+        ExecutionData executionData;
+        while(Setting.GameState == GameState.Battle)
+        {
+            executionData = MultiBattleDataManager.DequeueExecutionData();
+            Command(executionData);
+            yield return new WaitForSeconds(0.01f);
+        }
+    }
+
+    private void Command(ExecutionData executionData)
+    {
+        switch(executionData.type)
+        {
+            case ExecutionType.Attack:
+                OnAttack();
+                return;
+            case ExecutionType.Summon:
+                OnSummon(executionData.summonDeckIndex, executionData.position, executionData.isMine);
+                return;
+            case ExecutionType.Skill:
+                OnSkill(executionData.isMine);
+                return;
+        }
+    }
+
+
+    private void OnAttack()
+    {
+        Debug.Log(LogType.Trace, "OnAttack");
+
         for (int index = 0; index < SpawnManager.Units.Count; index++)
         {
             if (!SpawnManager.Units[index].IsUsed)
@@ -63,8 +89,10 @@ public class MultiBattle : MonoBehaviour, IPatternable
         }
     }
 
-    public static void OnSummon(int deckIndex, Vector2 position, bool isMyTeam)
+    private void OnSummon(int deckIndex, Vector2 position, bool isMyTeam)
     {
+        Debug.Log(LogType.Trace, "OnSummon");
+
         Unit unit = SpawnManager.PullUnit(isMyTeam);
 
         UnitData unitData = GetUnitData(deckIndex, isMyTeam);
@@ -74,12 +102,13 @@ public class MultiBattle : MonoBehaviour, IPatternable
         unit.OnSummoned();
     }
 
-    public static void OnSkill(bool isMyTeam)
+    private void OnSkill(bool isMyTeam)
     {
+        Debug.Log(LogType.Trace, "OnSkill");
 
     }
 
-    public static void GameOver()
+    public void GameOver()
     {
 
     }
@@ -88,7 +117,7 @@ public class MultiBattle : MonoBehaviour, IPatternable
     {
         Debug.Log(LogType.Trace, "MultiBattle InputPattern");
 
-        if (!isPlaying)
+        if (Setting.GameState != GameState.Battle)
             return;
 
         int index = GetMyDeckIndex(pattern);
