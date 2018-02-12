@@ -101,8 +101,6 @@ public class Client
     private void ReceiveBattleStart()
     {
         Debug.Log(LogType.Trace, "ReceiveBattleStart");
-
-        MultiBattle.instance.StartBattle();
     }
 
     private void ReceiveAttack()

@@ -21,13 +21,6 @@ public class MultiBattle : MonoBehaviour, IPatternable
         instance.client = client;
     }
 
-    public void StartBattle()
-    {
-        Debug.Log(LogType.Trace, "MultiBattle StartBattle");
-
-        StartCoroutine(ExecuteCommand());
-    }
-
     public void StartMakingEnemyDeck()
     {
         StartCoroutine(MakeEnemyDeck());
@@ -42,14 +35,20 @@ public class MultiBattle : MonoBehaviour, IPatternable
                 Preparation.InitMultiEnemySummoner(MultiBattleDataManager.enemyDeckData.enemyLevel, null);
                 for(int index = 0; index < Setting.DeckCount; index++)
                     DeckSetting.SetMultiEnemyDeck(MultiBattleDataManager.enemyDeckData.summonNumber[index], MultiBattleDataManager.enemyDeckData.summonLevel[index]);
+
+                yield return new WaitForSeconds(1f);
+
+                StartCoroutine(StartBattle());
                 yield break;
             }
             yield return new WaitForSeconds(0.1f);
         }
     }
 
-    private IEnumerator ExecuteCommand()
+    private IEnumerator StartBattle()
     {
+        Debug.Log(LogType.Trace, "MultiBattle StartBattle");
+
         ExecutionData executionData;
         while(Setting.GameState == GameState.Battle)
         {
