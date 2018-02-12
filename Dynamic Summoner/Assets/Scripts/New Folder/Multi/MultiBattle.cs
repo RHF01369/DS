@@ -36,7 +36,7 @@ public class MultiBattle : MonoBehaviour, IPatternable
                 for(int index = 0; index < Setting.DeckCount; index++)
                     DeckSetting.SetMultiEnemyDeck(MultiBattleDataManager.enemyDeckData.summonNumber[index], MultiBattleDataManager.enemyDeckData.summonLevel[index]);
 
-                yield return new WaitForSeconds(1f);
+                yield return new WaitForSeconds(0.5f);
 
                 StartCoroutine(StartBattle());
                 yield break;
@@ -52,6 +52,12 @@ public class MultiBattle : MonoBehaviour, IPatternable
         ExecutionData executionData;
         while(Setting.GameState == GameState.Battle)
         {
+            if (MultiBattleDataManager.GetExecutionQueueCount() <= 0)
+            {
+                yield return new WaitForSeconds(0.1f);
+                continue;
+            }
+
             executionData = MultiBattleDataManager.DequeueExecutionData();
             Command(executionData);
             yield return new WaitForSeconds(0.01f);

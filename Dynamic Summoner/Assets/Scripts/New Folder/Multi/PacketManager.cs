@@ -36,6 +36,11 @@ public static class MultiBattleDataManager
         summonLevel = new int[4],
     };
 
+    public static int GetExecutionQueueCount()
+    {
+        return executionDatas.Count;
+    }
+
     public static void EnqueueExecutionData(ExecutionData executionData)
     {
         executionDatas.Enqueue(executionData);
