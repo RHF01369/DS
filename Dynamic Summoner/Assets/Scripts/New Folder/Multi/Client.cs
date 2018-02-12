@@ -198,7 +198,7 @@ public class Client
         ByteConverter.FromInt((int)PacketType.Summon, sendBuffer, ref packetSize);
         ByteConverter.FromInt(0, sendBuffer, ref packetSize);
         ByteConverter.FromInt(0, sendBuffer, ref packetSize);
-        ByteConverter.FromInt(0, sendBuffer, ref packetSize);
+        ByteConverter.FromInt(playerNumber, sendBuffer, ref packetSize);
         ByteConverter.FromInt(index, sendBuffer, ref packetSize);
         ByteConverter.FromFloat(position.x, sendBuffer, ref packetSize);
         ByteConverter.FromFloat(position.y, sendBuffer, ref packetSize);
