@@ -44,7 +44,7 @@ public class GameHandler : MonoBehaviour
         Preparation.InitMySummoner();
 
         Client client = new Client();
-        client.Connect();
+        client.Start();
         client.SendClientData(UserInfo.nickName, UserData.TierScore);
 
         UI.OnBattle();

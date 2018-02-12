@@ -16,7 +16,7 @@ public class Client
 {
     private const int Port = 7000;
 
-    private Socket serverSocket;
+    private Socket receiveSocket;
 
     private byte[] receiveBuffer;
     private byte[] sendBuffer;
@@ -24,12 +24,17 @@ public class Client
     private int playerNumber;
 
     private Dictionary<PacketType, Action> packetTypeToAction;
+    private SocketAsyncEventArgs socketAsyncEventArgs;
 
     public Client()
     {
-        serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        receiveSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         receiveBuffer = new byte[1024];
         sendBuffer = new byte[1024];
+
+        socketAsyncEventArgs = new SocketAsyncEventArgs();
+        socketAsyncEventArgs.SetBuffer(receiveBuffer, 0, receiveBuffer.Length);
+        socketAsyncEventArgs.Completed += ReceivePacket;
 
         packetTypeToAction = new Dictionary<PacketType, Action>()
         {
@@ -42,44 +47,26 @@ public class Client
         };
     }
 
-    public void Connect()
+    private void ReceivePacket(object sender, SocketAsyncEventArgs e)
     {
+        //throw new NotImplementedException();
+        ClassifyReceivedPacket();
+        receiveSocket.ReceiveAsync(e);
+    }
+
+    public void Start()
+    {   
+
+
         IPEndPoint ipEndPoint = new IPEndPoint(IPAddress.Parse("192.168.0.179"), Port);
-        serverSocket.Connect(ipEndPoint);
+        receiveSocket.Connect(ipEndPoint);
 
 
         Setting.GameState = GameState.Battle;
         Setting.GameMode = GameMode.Multi;
 
-        MultiBattle.instance.StartCoroutine(ReceivePacket());
+        receiveSocket.ReceiveAsync(socketAsyncEventArgs);
     }
-
-
-    IEnumerator ReceivePacket()
-    {
-        Debug.Log(LogType.Trace, "ReceivePacket");
-       
-        while(Setting.GameMode == GameMode.Multi && Setting.GameState == GameState.Battle)
-        {
-            serverSocket.Receive(receiveBuffer, 0, receiveBuffer.Length, SocketFlags.None);
-
-            ClassifyReceivedPacket();
-            yield return null;
-        }
-    }
-
-    //private void ReceivePacket()
-    //{
-    //    Debug.Log(LogType.Trace, "ReceivePacket");
-    //    Task receiveTask = Task.Run(() => {
-    //        serverSocket.Receive(receiveBuffer, 0, receiveBuffer.Length, SocketFlags.None);
-    //    });
-
-    //    receiveTask.ContinueWith((result) => {
-    //        ReceivePacket();
-    //        ClassifyReceivedPacket();
-    //    });
-    //}
 
     private void ClassifyReceivedPacket()
     {
@@ -182,7 +169,7 @@ public class Client
         ByteConverter.FromString(nickName, receiveBuffer, ref packetSize);
         packetSize = 10;
         ByteConverter.FromInt(rankScore, receiveBuffer, ref packetSize);
-        serverSocket.Send(receiveBuffer, packetSize, SocketFlags.None);
+        receiveSocket.Send(receiveBuffer, packetSize, SocketFlags.None);
     }
 
     public void SendDeckData()
@@ -201,7 +188,7 @@ public class Client
 
         ByteConverter.FromInt(packetSize, sendBuffer, 4);
 
-        serverSocket.Send(sendBuffer, packetSize, SocketFlags.None);
+        receiveSocket.Send(sendBuffer, packetSize, SocketFlags.None);
     }
 
     public void SendSummonPacket(int index)
@@ -219,7 +206,7 @@ public class Client
 
         ByteConverter.FromInt(packetSize, sendBuffer, 4);
 
-        serverSocket.Send(sendBuffer, packetSize, SocketFlags.None);
+        receiveSocket.Send(sendBuffer, packetSize, SocketFlags.None);
     }
 
     public void SendSkillPacket()
@@ -232,6 +219,6 @@ public class Client
         int packetSize = 0;
         ByteConverter.FromInt((int)PacketType.ReadyComplete, sendBuffer, ref packetSize);
 
-        serverSocket.Send(sendBuffer, packetSize, SocketFlags.None);
+        receiveSocket.Send(sendBuffer, packetSize, SocketFlags.None);
     }
 }
