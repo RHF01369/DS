@@ -306,16 +306,6 @@
     <Compile Include="Assets\JSON\JSONObject.cs" />
     <Compile Include="Assets\JSON\JSONTemplates.cs" />
     <Compile Include="Assets\JSON\VectorTemplates.cs" />
-    <Compile Include="Assets\PhotonChatApi\ChatChannel.cs" />
-    <Compile Include="Assets\PhotonChatApi\ChatClient.cs" />
-    <Compile Include="Assets\PhotonChatApi\ChatDisconnectCause.cs" />
-    <Compile Include="Assets\PhotonChatApi\ChatEventCode.cs" />
-    <Compile Include="Assets\PhotonChatApi\ChatOperationCode.cs" />
-    <Compile Include="Assets\PhotonChatApi\ChatParameterCode.cs" />
-    <Compile Include="Assets\PhotonChatApi\ChatPeer.cs" />
-    <Compile Include="Assets\PhotonChatApi\ChatState.cs" />
-    <Compile Include="Assets\PhotonChatApi\ChatUserStatus.cs" />
-    <Compile Include="Assets\PhotonChatApi\IChatClientListener.cs" />
     <Compile Include="Assets\Scripts\IPatternable.cs" />
     <Compile Include="Assets\Scripts\New Folder\Battle.cs" />
     <Compile Include="Assets\Scripts\New Folder\Data &amp;&amp; Info\Buff.cs" />
@@ -355,7 +345,6 @@
     <Compile Include="Assets\Scripts\New Folder\UI.cs" />
     <Compile Include="Assets\Scripts\New Folder\Unit.cs" />
     <Compile Include="Assets\Scripts\New Folder\UnitSpawn.cs" />
-    <Compile Include="Assets\Scripts\OldSummoner\GameHandler.cs" />
     <Compile Include="Assets\Scripts\OldSummoner\Handler\BattleHandler.cs" />
     <Compile Include="Assets\Scripts\OldSummoner\Handler\ScreenHandler.cs" />
     <Compile Include="Assets\Scripts\OldSummoner\Handler\SingleBattleHandler.cs" />
@@ -382,9 +371,6 @@
     <None Include="Assets\GooglePlayGames\Editor\template-GameInfo.txt" />
     <None Include="Assets\GooglePlayGames\Plugins\Android\GooglePlayGamesManifest.plugin\AndroidManifest.xml" />
     <None Include="Assets\JSON\readme.txt" />
-    <None Include="Assets\Photon Unity Networking\changelog.txt" />
-    <None Include="Assets\Photon Unity Networking\link.xml" />
-    <None Include="Assets\Photon Unity Networking\readme.txt" />
     <None Include="Assets\PlayServicesResolver\Editor\play-services-resolver_v1.2.59.0.txt" />
     <None Include="Assets\Plugins\Android\Firebase\AndroidManifest.xml" />
     <None Include="Assets\Plugins\Android\Firebase\res\values\google-services.xml" />
