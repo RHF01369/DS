@@ -36,8 +36,6 @@ public static class DeckSetting
 
         SummonInfo summonInfo = SummonInfoManager.summonInfo[number];
 
-        UnityEngine.Debug.Log("SummonInfo : " + summonInfo.ToString());
-
         Setting.EnemyDeck.Add(GetUnitData(summonInfo, level));
 
         UnityEngine.Debug.Log("EnemyDeck.Add");
