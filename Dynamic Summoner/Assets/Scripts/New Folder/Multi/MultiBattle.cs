@@ -54,13 +54,13 @@ public class MultiBattle : MonoBehaviour, IPatternable
         {
             if (MultiBattleDataManager.GetExecutionQueueCount() <= 0)
             {
-                yield return new WaitForSeconds(0.1f);
+                yield return new WaitForSeconds(0.2f);
                 continue;
             }
 
             executionData = MultiBattleDataManager.DequeueExecutionData();
             Command(executionData);
-            yield return new WaitForSeconds(0.01f);
+            yield return new WaitForSeconds(0.2f);
         }
     }
 
