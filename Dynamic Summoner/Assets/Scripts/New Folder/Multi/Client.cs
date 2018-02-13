@@ -58,6 +58,8 @@ public class Client
 
     private void ReceivePacket0(object sender, SocketAsyncEventArgs e)
     {
+        Debug.Log(LogType.Trace, "ReceivePacket00 : {0} : {1}", ByteConverter.ToInt(e.Buffer, 0), ByteConverter.ToInt(e.Buffer, 8));
+
         //throw new NotImplementedException();
         receiveSocket.ReceiveAsync(socketAsyncEventArgs1);
         ClassifyReceivedPacket(e.Buffer);
@@ -65,6 +67,8 @@ public class Client
 
     private void ReceivePacket1(object sender, SocketAsyncEventArgs e)
     {
+        Debug.Log(LogType.Trace, "ReceivePacket11 : {0} : {1}", ByteConverter.ToInt(e.Buffer, 0), ByteConverter.ToInt(e.Buffer, 8));
+
         //throw new NotImplementedException();
         receiveSocket.ReceiveAsync(socketAsyncEventArgs0);
         ClassifyReceivedPacket(e.Buffer);
