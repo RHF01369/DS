@@ -49,7 +49,7 @@ public static class MultiBattleDataManager
 
     public static void EnqueueExecutionData(ExecutionData executionData)
     {
-        Debug.Log(LogType.Test, "<Color=Red> EE Order : " + executionData.order +  "</Color=Red>");
+        Debug.Log(LogType.Test, "<Color=Red> EE Order : " + executionData.order +  "</Color>");
         executionDatas.Enqueue(executionData);
         executionDataOrder++;
         FindMatchingExecutionData();
@@ -59,7 +59,7 @@ public static class MultiBattleDataManager
     {
         ExecutionData executionData = executionDatas.Dequeue();
 
-        Debug.Log(LogType.Test, "<Color=Blue> DD Order : " + executionData.order + "</Color=Blue>");
+        Debug.Log(LogType.Test, "<Color=Blue> DD Order : " + executionData.order + "</Color>");
 
         return executionData;
     }
