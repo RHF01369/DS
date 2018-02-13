@@ -36,7 +36,7 @@ public class MultiBattle : MonoBehaviour, IPatternable
                 for(int index = 0; index < Setting.deckCount; index++)
                     DeckSetting.SetMultiEnemyDeck(MultiBattleDataManager.enemyDeckData.summonNumber[index], MultiBattleDataManager.enemyDeckData.summonLevel[index]);
 
-                yield return new WaitForSeconds(0.5f);
+                yield return new WaitForSeconds(0.1f);
 
                 StartCoroutine(StartBattle());
                 yield break;
