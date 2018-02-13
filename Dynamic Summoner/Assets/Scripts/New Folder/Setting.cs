@@ -33,9 +33,12 @@ public class Setting : MonoBehaviour
     [SerializeField] BattleSetting battleSetting;
     [SerializeField] GameObject battleZone;
 
+    public static int deckCount { get; private set; }
+    public static Dictionary<int, SummonData> summonDataByNumber { get; private set; }
+    public static float battleZoneXPosition { get; private set; }
     private SummonDeck summonDeck;
-    private Dictionary<int, SummonData> summonDataByNumber;
-    private int deckCount;
+
+
 
     private void Awake()
     {
@@ -44,6 +47,11 @@ public class Setting : MonoBehaviour
         summonDeck.Enemy = new List<UnitData>();
         summonDataByNumber = new Dictionary<int, SummonData>();
         deckCount = 4;
+    }
+
+    private void Start()
+    {
+        battleZoneXPosition = battleZone.transform.position.x;
     }
 
     public static GameState GameState
@@ -83,12 +91,6 @@ public class Setting : MonoBehaviour
         get { return instance.summonDeck.Enemy; }
     }
 
-    public static Dictionary<int, SummonData> SummonDataByNumber
-    {
-        get { return instance.summonDataByNumber; }
-    }
-
     public static GameObject BattleZone { get { return instance.battleZone; } } 
 
-    public static int DeckCount { get { return instance.deckCount; } }
 }

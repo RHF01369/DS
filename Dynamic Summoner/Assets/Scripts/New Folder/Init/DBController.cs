@@ -162,7 +162,7 @@ public class DBController
                 foreach(DataSnapshot summonData in task.Result.Children)
                 {
 
-                    Setting.SummonDataByNumber.Add(index, new SummonData(int.Parse(summonData.Child("SummonNumber").Value.ToString()),
+                    Setting.summonDataByNumber.Add(index, new SummonData(int.Parse(summonData.Child("SummonNumber").Value.ToString()),
                                                                          int.Parse(summonData.Child("Experience").Value.ToString()),
                                                                          int.Parse(summonData.Child("Level").Value.ToString())));
                     index++;

@@ -33,7 +33,7 @@ public class MultiBattle : MonoBehaviour, IPatternable
             if(MultiBattleDataManager.enemyDeckData.isReceived)
             {
                 Preparation.InitMultiEnemySummoner(MultiBattleDataManager.enemyDeckData.enemyLevel, null);
-                for(int index = 0; index < Setting.DeckCount; index++)
+                for(int index = 0; index < Setting.deckCount; index++)
                     DeckSetting.SetMultiEnemyDeck(MultiBattleDataManager.enemyDeckData.summonNumber[index], MultiBattleDataManager.enemyDeckData.summonLevel[index]);
 
                 yield return new WaitForSeconds(0.5f);

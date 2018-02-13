@@ -125,7 +125,7 @@ public class Client
 
         int startIndex = 9;
         MultiBattleDataManager.enemyDeckData.enemyLevel = ByteConverter.ToInt(buffer, ref startIndex);
-        for(int index = 0; index < Setting.DeckCount; index++)
+        for(int index = 0; index < Setting.deckCount; index++)
         {
             MultiBattleDataManager.enemyDeckData.summonNumber[index] = ByteConverter.ToInt(buffer, ref startIndex);
             MultiBattleDataManager.enemyDeckData.summonLevel[index] = ByteConverter.ToInt(buffer, ref startIndex);
@@ -196,7 +196,8 @@ public class Client
     {
         if (isMine)
             return xPos;
-        return (2 * Setting.BattleZone.transform.position.x - xPos);
+
+        return (2 * Setting.battleZoneXPosition - xPos);
     }
 
     private void ReceiveSkill(byte[] buffer)

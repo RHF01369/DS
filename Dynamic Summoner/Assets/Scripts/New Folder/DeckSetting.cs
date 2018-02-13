@@ -23,7 +23,7 @@ public static class DeckSetting
         {
             number = numbers[index];
             summonInfo = SummonInfoManager.summonInfo[number];
-            level = Setting.SummonDataByNumber[number].level;
+            level = Setting.summonDataByNumber[number].level;
 
             Setting.MyDeck.Add(GetUnitData(summonInfo, level));
         }
