@@ -21,7 +21,6 @@ public class Client
     private const int ExecutionOrderStartIndex = 9;
     private const byte PacketStartNumber = 255;
 
-
     private Socket receiveSocket;
 
     private byte[][] receiveBuffer;
@@ -169,19 +168,20 @@ public class Client
         int startIndex = ExecutionOrderStartIndex;
         int executionOrder = ByteConverter.ToInt(buffer, ref startIndex);
         int playerNumber = ByteConverter.ToInt(buffer, ref startIndex);
+        bool isMine = this.playerNumber == playerNumber ? true : false;
 
         if (executionOrder < MultiBattleDataManager.executionDataOrder)
             return;
 
         int summonDeckNumber = ByteConverter.ToInt(buffer, ref startIndex);
-        float xPos = ByteConverter.ToFloat(buffer, ref startIndex);
+        float xPos = GetSummonXPosition(ByteConverter.ToFloat(buffer, ref startIndex), isMine);
         float yPos = ByteConverter.ToFloat(buffer, ref startIndex);
 
         ExecutionData executionData = new ExecutionData()
         {
             type = ExecutionType.Summon,
             order = executionOrder,
-            isMine = this.playerNumber == playerNumber ? true : false,
+            isMine = isMine,
 
             summonDeckIndex = summonDeckNumber,
             position = new Vector3(xPos, yPos)
@@ -190,6 +190,13 @@ public class Client
         AddExecutionDataToManager(executionData);
 
         CheckChainingPacket(buffer, ByteConverter.ToInt(buffer, PacketSizeStartIndex));
+    }
+
+    private float GetSummonXPosition(float xPos, bool isMine)
+    {
+        if (isMine)
+            return xPos;
+        return (2 * Setting.BattleZone.transform.position.x - xPos);
     }
 
     private void ReceiveSkill(byte[] buffer)
