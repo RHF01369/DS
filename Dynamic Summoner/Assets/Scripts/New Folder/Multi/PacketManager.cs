@@ -49,6 +49,8 @@ public static class MultiBattleDataManager
 
     public static void EnqueueExecutionData(ExecutionData executionData)
     {
+        Debug.Log(LogType.Trace, "EnqueueExecutionData");
+
         executionDatas.Enqueue(executionData);
         executionDataOrder++;
         FindMatchingExecutionData();
@@ -61,6 +63,8 @@ public static class MultiBattleDataManager
 
     public static void AddOutOfSequenceData(ExecutionData executionData)
     {
+        Debug.Log(LogType.Trace, "AddOutOfSequenceData");
+
         outOfSequenceDatas.Add(executionData);
     }
 
@@ -77,6 +81,8 @@ public static class MultiBattleDataManager
     
     private static void RemoveOutOfSequenceData(ExecutionData executionData)
     {
+        Debug.Log(LogType.Trace, "RemoveOutOfSequenceData");
+
         outOfSequenceDatas.Remove(executionData);
     }
 }
