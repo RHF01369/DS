@@ -61,6 +61,9 @@ public static class MultiBattleDataManager
 
         Debug.Log(LogType.Test, "<Color=Red> DD Order : " + executionData.order + ", Type : " + executionData.type + "</Color>");
 
+        if (executionData.type == ExecutionType.Summon)
+            Debug.Log(LogType.Test, "<Colo=Green> isMine : " + executionData.isMine + "</Color>");
+
         return executionData;
     }
 

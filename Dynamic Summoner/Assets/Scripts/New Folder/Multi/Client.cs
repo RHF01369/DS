@@ -173,7 +173,7 @@ public class Client
         if (executionOrder < MultiBattleDataManager.executionDataOrder)
             return;
 
-        int summonDeckNumber = ByteConverter.ToInt(buffer, ref startIndex);
+        int summonDeckIndex = ByteConverter.ToInt(buffer, ref startIndex);
         float xPos = GetSummonXPosition(ByteConverter.ToFloat(buffer, ref startIndex), isMine);
         float yPos = ByteConverter.ToFloat(buffer, ref startIndex);
 
@@ -183,7 +183,7 @@ public class Client
             order = executionOrder,
             isMine = isMine,
 
-            summonDeckIndex = summonDeckNumber,
+            summonDeckIndex = summonDeckIndex,
             position = new Vector3(xPos, yPos)
         };
 
