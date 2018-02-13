@@ -65,7 +65,7 @@ public class Client
 
     private void ReceivePacket0(object sender, SocketAsyncEventArgs e)
     {
-        Debug.Log(LogType.Trace, "ReceivePacket00 : {0} : {1}", ByteConverter.ToInt(e.Buffer, 0), ByteConverter.ToInt(e.Buffer, 8));
+        Debug.Log(LogType.Trace, "ReceivePacket00 : {0} : {1}", ByteConverter.ToInt(e.Buffer, 1), ByteConverter.ToInt(e.Buffer, 9));
 
         //throw new NotImplementedException();
         receiveSocket.ReceiveAsync(socketAsyncEventArgs1);
@@ -74,7 +74,7 @@ public class Client
 
     private void ReceivePacket1(object sender, SocketAsyncEventArgs e)
     {
-        Debug.Log(LogType.Trace, "ReceivePacket11 : {0} : {1}", ByteConverter.ToInt(e.Buffer, 0), ByteConverter.ToInt(e.Buffer, 8));
+        Debug.Log(LogType.Trace, "ReceivePacket11 : {0} : {1}", ByteConverter.ToInt(e.Buffer, 1), ByteConverter.ToInt(e.Buffer, 9));
 
         //throw new NotImplementedException();
         receiveSocket.ReceiveAsync(socketAsyncEventArgs0);
@@ -213,7 +213,10 @@ public class Client
     private void CheckChainingPacket(byte[] buffer, int startIndex)
     {
         if (buffer[startIndex] != PacketStartNumber)
+        {
+            Array.Clear(buffer, 0, buffer.Length);
             return;
+        }
 
         Debug.Log(LogType.Trace, "CheckChainingPacket");
 
