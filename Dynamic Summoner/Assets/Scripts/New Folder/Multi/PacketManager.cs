@@ -49,7 +49,7 @@ public static class MultiBattleDataManager
 
     public static void EnqueueExecutionData(ExecutionData executionData)
     {
-        Debug.Log(LogType.Trace, "EnqueueExecutionData");
+        Debug.Log(LogType.Test, "EnqueueExecutionData Order : {0}", executionData.order);
 
         executionDatas.Enqueue(executionData);
         executionDataOrder++;
@@ -58,7 +58,11 @@ public static class MultiBattleDataManager
 
     public static ExecutionData DequeueExecutionData()
     {
-        return executionDatas.Dequeue();
+        ExecutionData executionData = executionDatas.Dequeue();
+
+        Debug.Log(LogType.Test, "DequeueExecutionData Order : {0}", executionData.order);
+
+        return executionData;
     }
 
     public static void AddOutOfSequenceData(ExecutionData executionData)

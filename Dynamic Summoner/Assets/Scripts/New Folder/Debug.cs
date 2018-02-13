@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 
-public enum LogType { Exception, Trace, C, D };
+public enum LogType { Exception, Trace, Test, D };
 
 static class Debug
 {
@@ -11,10 +11,10 @@ static class Debug
     {
         logTypeToBool = new Dictionary<LogType, bool>()
             {
-                { LogType.Exception, true},
-                { LogType.Trace, true},
-                { LogType.C, true},
-                { LogType.D, true}
+                { LogType.Exception,    true},
+                { LogType.Trace,        false},
+                { LogType.Test,         true},
+                { LogType.D,            true}
             };
     }
 
