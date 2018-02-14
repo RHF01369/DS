@@ -27,7 +27,7 @@ public class Client
     private byte[] chainingReceiveBuffer;
     private byte[] sendBuffer;
 
-    private int playerNumber;
+    public int playerNumber { get; private set; }
 
     private Dictionary<PacketType, Action<byte[]>> packetTypeToAction;
     private SocketAsyncEventArgs socketAsyncEventArgs0;
@@ -204,7 +204,6 @@ public class Client
     private void ReceiveSkill(byte[] buffer)
     {
 
-
         //AddExecutionDataToManager(executionData);
 
         CheckChainingPacket(buffer, ByteConverter.ToInt(buffer, PacketSizeStartIndex));
@@ -224,6 +223,7 @@ public class Client
         if (buffer[startIndex] != PacketStartNumber)
         {
             Array.Clear(buffer, 0, buffer.Length);
+            Array.Clear(chainingReceiveBuffer, 0, chainingReceiveBuffer.Length);
             return;
         }
 

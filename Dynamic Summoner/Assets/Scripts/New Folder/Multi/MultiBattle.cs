@@ -87,10 +87,23 @@ public class MultiBattle : MonoBehaviour, IPatternable
 
         for (int index = 0; index < SpawnManager.Units.Count; index++)
         {
-            if (!SpawnManager.Units[index].IsUsed)
-                continue;
+            if(index % 2 == 0)
+            {
+                if (!SpawnManager.Units[index - 1].IsUsed)
+                    continue;
 
-            SpawnManager.Units[index].Activate();
+                SpawnManager.Units[index - 1].Activate();
+                continue;
+            }
+
+            if(index % 2 == 1)
+            {
+                if (!SpawnManager.Units[index + 1].IsUsed)
+                    continue;
+
+                SpawnManager.Units[index + 1].Activate();
+                continue;
+            }
         }
     }
 
