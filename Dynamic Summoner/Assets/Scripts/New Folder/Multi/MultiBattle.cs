@@ -87,23 +87,43 @@ public class MultiBattle : MonoBehaviour, IPatternable
 
         for (int index = 0; index < SpawnManager.Units.Count; index++)
         {
-            if(index % 2 == 1)
-            {
-                if (!SpawnManager.Units[index - 1].IsUsed)
-                    continue;
+            if (client.playerNumber == 1)
+                AttackAsPlayer1(index);
+            else
+                AttackAsPlayer2(index);
+        }
+    }
 
-                SpawnManager.Units[index - 1].Activate();
-                continue;
-            }
+    private void AttackAsPlayer1(int index)
+    {
+        Debug.Log(LogType.Test, "AttackAsPlaye1");
 
-            if(index % 2 == 0)
-            {
-                if (!SpawnManager.Units[index + 1].IsUsed)
-                    continue;
+        if (!SpawnManager.Units[index - 1].IsUsed)
+            return;
 
-                SpawnManager.Units[index + 1].Activate();
-                continue;
-            }
+        SpawnManager.Units[index - 1].Activate();
+        return;
+    }
+
+    private void AttackAsPlayer2(int index)
+    {
+        Debug.Log(LogType.Test, "AttackAsPlaye2");
+
+        if (index % 2 == 1)
+        {
+            if (!SpawnManager.Units[index - 1].IsUsed)
+                return;
+
+            SpawnManager.Units[index - 1].Activate();
+            return;
+        }
+        else
+        {
+            if (!SpawnManager.Units[index + 1].IsUsed)
+                return;
+
+            SpawnManager.Units[index + 1].Activate();
+            return;
         }
     }
 
