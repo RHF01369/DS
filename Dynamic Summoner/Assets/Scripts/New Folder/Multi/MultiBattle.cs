@@ -98,10 +98,10 @@ public class MultiBattle : MonoBehaviour, IPatternable
     {
         Debug.Log(LogType.Test, "AttackAsPlaye1");
 
-        if (!SpawnManager.Units[index - 1].IsUsed)
+        if (!SpawnManager.Units[index].IsUsed)
             return;
 
-        SpawnManager.Units[index - 1].Activate();
+        SpawnManager.Units[index].Activate();
         return;
     }
 
