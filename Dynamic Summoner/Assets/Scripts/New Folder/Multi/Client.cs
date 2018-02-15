@@ -10,18 +10,18 @@ public enum PacketType
     ClientData, PlayerNumber,
     Attack, Summon, Skill,
     EnemyDeckData, DeckDataRequest,
-    ReadyComplete, BattleStart
+    ReadyComplete, BattleStart,
+    Synchronizaion,    
 };
 
 public class Client
 {
     private const int Port = 7000;
-    private const int MaxSize = 1024;
     private const int PacketSizeStartIndex = 5;
     private const int ExecutionOrderStartIndex = 9;
     private const byte PacketStartNumber = 255;
 
-    private Socket receiveSocket;
+    private Socket socket;
 
     private byte[][] receiveBuffer;
     private byte[] chainingReceiveBuffer;
@@ -35,12 +35,12 @@ public class Client
 
     public Client()
     {
-        receiveSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         receiveBuffer = new byte[2][];
-        receiveBuffer[0] = new byte[MaxSize];
-        receiveBuffer[1] = new byte[MaxSize];
-        chainingReceiveBuffer = new byte[MaxSize];
-        sendBuffer = new byte[MaxSize];
+        receiveBuffer[0] = new byte[Setting.MaxSize];
+        receiveBuffer[1] = new byte[Setting.MaxSize];
+        chainingReceiveBuffer = new byte[Setting.MaxSize];
+        sendBuffer = new byte[Setting.MaxSize];
 
         socketAsyncEventArgs0 = new SocketAsyncEventArgs();
         socketAsyncEventArgs0.SetBuffer(receiveBuffer[0], 0, receiveBuffer[0].Length);
@@ -58,8 +58,11 @@ public class Client
             {PacketType.Skill,              ReceiveSkill},
             {PacketType.DeckDataRequest,    ReceiveDeckDataRequest},
             {PacketType.EnemyDeckData,      ReceiveEnemyDeckData },
-            {PacketType.BattleStart,        ReceiveBattleStart }
+            {PacketType.BattleStart,        ReceiveBattleStart },
+            {PacketType.Synchronizaion,     ReceiveSynchronization },
         };
+
+        MultiBattleDataManager.Initialize(this);
     }
 
     private void ReceivePacket0(object sender, SocketAsyncEventArgs e)
@@ -67,7 +70,7 @@ public class Client
         Debug.Log(LogType.Trace, "ReceivePacket-0 : {0} :", ByteConverter.ToInt(e.Buffer, 1));
 
         //throw new NotImplementedException();
-        receiveSocket.ReceiveAsync(socketAsyncEventArgs1);
+        socket.ReceiveAsync(socketAsyncEventArgs1);
         ClassifyReceivedPacket(e.Buffer);
     }
 
@@ -76,20 +79,20 @@ public class Client
         Debug.Log(LogType.Trace, "ReceivePacket-1 : {0} :", ByteConverter.ToInt(e.Buffer, 1));
 
         //throw new NotImplementedException();
-        receiveSocket.ReceiveAsync(socketAsyncEventArgs0);
+        socket.ReceiveAsync(socketAsyncEventArgs0);
         ClassifyReceivedPacket(e.Buffer);
     }
 
     public void Start()
     {   
         IPEndPoint ipEndPoint = new IPEndPoint(IPAddress.Parse("192.168.0.179"), Port);
-        receiveSocket.Connect(ipEndPoint);
+        socket.Connect(ipEndPoint);
 
 
         Setting.GameState = GameState.Battle;
         Setting.GameMode = GameMode.Multi;
 
-        receiveSocket.ReceiveAsync(socketAsyncEventArgs0);
+        socket.ReceiveAsync(socketAsyncEventArgs0);
 
         MultiBattle.Initialize(this);
         MultiBattle.instance.StartMakingEnemyDeck();
@@ -125,7 +128,7 @@ public class Client
 
         int startIndex = 9;
         MultiBattleDataManager.enemyDeckData.enemyLevel = ByteConverter.ToInt(buffer, ref startIndex);
-        for(int index = 0; index < Setting.deckCount; index++)
+        for(int index = 0; index < Setting.DeckCount; index++)
         {
             MultiBattleDataManager.enemyDeckData.summonNumber[index] = ByteConverter.ToInt(buffer, ref startIndex);
             MultiBattleDataManager.enemyDeckData.summonLevel[index] = ByteConverter.ToInt(buffer, ref startIndex);
@@ -203,8 +206,15 @@ public class Client
 
     private void ReceiveSkill(byte[] buffer)
     {
-
         //AddExecutionDataToManager(executionData);
+
+        CheckChainingPacket(buffer, ByteConverter.ToInt(buffer, PacketSizeStartIndex));
+    }
+
+    private void ReceiveSynchronization(byte[] buffer)
+    {
+        MultiBattleDataManager.synchronizationData = buffer;
+        MultiBattleDataManager.canSynchronize = true;
 
         CheckChainingPacket(buffer, ByteConverter.ToInt(buffer, PacketSizeStartIndex));
     }
@@ -246,7 +256,7 @@ public class Client
 
         ByteConverter.FromInt(packetSize, sendBuffer, PacketSizeStartIndex);
 
-        receiveSocket.Send(sendBuffer, packetSize, SocketFlags.None);
+        socket.Send(sendBuffer, packetSize, SocketFlags.None);
     }
 
     public void SendDeckData()
@@ -265,7 +275,33 @@ public class Client
 
         ByteConverter.FromInt(packetSize, sendBuffer, PacketSizeStartIndex);
 
-        receiveSocket.Send(sendBuffer, packetSize, SocketFlags.None);
+        socket.Send(sendBuffer, packetSize, SocketFlags.None);
+    }
+
+    public void SendSynchronizationPacket()
+    {
+        int packetSize = 1;
+        sendBuffer[0] = PacketStartNumber;
+        ByteConverter.FromInt((int)PacketType.Synchronizaion, sendBuffer, ref packetSize);
+        ByteConverter.FromInt(0, sendBuffer, ref packetSize);
+        ByteConverter.FromInt(SpawnManager.CountUnits(), sendBuffer, ref packetSize);
+
+        foreach (Unit unit in SpawnManager.Units)
+        {
+            ByteConverter.FromBool(unit.IsUsed, sendBuffer, ref packetSize);
+
+            if (!unit.IsUsed)
+            {
+                packetSize += 4;
+                continue;
+            }
+
+            ByteConverter.FromFloat(unit.Health, sendBuffer, ref packetSize);
+        }
+
+        ByteConverter.FromInt(packetSize, sendBuffer, packetSize);
+        
+        socket.Send(sendBuffer, packetSize, SocketFlags.None);
     }
 
     public void SendSummonPacket(int index)
@@ -284,7 +320,7 @@ public class Client
 
         ByteConverter.FromInt(packetSize, sendBuffer, PacketSizeStartIndex);
 
-        receiveSocket.Send(sendBuffer, packetSize, SocketFlags.None);
+        socket.Send(sendBuffer, packetSize, SocketFlags.None);
     }
 
     public void SendSkillPacket()
@@ -299,6 +335,6 @@ public class Client
         ByteConverter.FromInt((int)PacketType.ReadyComplete, sendBuffer, ref packetSize);
         ByteConverter.FromInt(packetSize + 4, sendBuffer, ref packetSize);
 
-        receiveSocket.Send(sendBuffer, packetSize, SocketFlags.None);
+        socket.Send(sendBuffer, packetSize, SocketFlags.None);
     }
 }

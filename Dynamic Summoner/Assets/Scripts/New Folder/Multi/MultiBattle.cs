@@ -8,10 +8,13 @@ public class MultiBattle : MonoBehaviour, IPatternable
     public static MultiBattle instance { get; private set; }
 
     private Client client;
+    private bool isSynchronized;
+
 
     private void Awake()
     {
         instance = this;
+        isSynchronized = false;
     }
 
     public static void Initialize(Client client)
@@ -19,6 +22,11 @@ public class MultiBattle : MonoBehaviour, IPatternable
         instance.gameObject.SetActive(true);
         PatternLock.Battle = instance;
         instance.client = client;
+    }
+
+    public static void SetSynchronized(bool value)
+    {
+        instance.isSynchronized = value;
     }
 
     public void StartMakingEnemyDeck()
@@ -33,7 +41,7 @@ public class MultiBattle : MonoBehaviour, IPatternable
             if(MultiBattleDataManager.enemyDeckData.isReceived)
             {
                 Preparation.InitMultiEnemySummoner(MultiBattleDataManager.enemyDeckData.enemyLevel, null);
-                for(int index = 0; index < Setting.deckCount; index++)
+                for(int index = 0; index < Setting.DeckCount; index++)
                     DeckSetting.SetMultiEnemyDeck(MultiBattleDataManager.enemyDeckData.summonNumber[index], MultiBattleDataManager.enemyDeckData.summonLevel[index]);
 
                 yield return new WaitForSeconds(0.1f);
@@ -52,8 +60,11 @@ public class MultiBattle : MonoBehaviour, IPatternable
         ExecutionData executionData;
         while(Setting.GameState == GameState.Battle)
         {
-            if (MultiBattleDataManager.GetExecutionQueueCount() <= 0)
+            if (MultiBattleDataManager.GetExecutionQueueCount() <= 0 || !isSynchronized)
             {
+                if (MultiBattleDataManager.canSynchronize)
+                    Synchronization(MultiBattleDataManager.synchronizationData);
+
                 yield return new WaitForSeconds(0.2f);
                 continue;
             }
@@ -62,6 +73,41 @@ public class MultiBattle : MonoBehaviour, IPatternable
             Command(executionData);
             yield return new WaitForSeconds(0.2f);
         }
+    }
+
+    private void Synchronization(byte[] syncData)
+    {
+        Debug.Log(LogType.Test, "Synchronization");
+
+        int totalNumber = ByteConverter.ToInt(syncData, 9);
+
+        int number = -1;
+        foreach (Unit unit in SpawnManager.Units)
+        {
+            if (totalNumber < SpawnManager.CountUnits() && totalNumber <= number++)
+                return;
+
+            if(number % 2 == 0)
+                SynchronizeUnit(syncData, unit, number, 18);
+            else
+                SynchronizeUnit(syncData, unit, number, 13);
+        }
+
+        isSynchronized = true;
+        MultiBattleDataManager.canSynchronize = false;
+        Array.Clear(syncData, 0, syncData.Length);
+    }
+
+    private void SynchronizeUnit(byte[] syncData, Unit unit, int number, int startIndex)
+    {
+        bool isUsed = ByteConverter.ToBool(syncData, startIndex + (10 * number));
+        if (!isUsed && !unit.IsUsed)
+            return;
+
+        if (!isUsed && unit.IsUsed)
+            unit.SetIsUsed(false);
+
+        unit.Health = ByteConverter.ToFloat(syncData, (startIndex + 1) + (10 * number));
     }
 
     private void Command(ExecutionData executionData)
@@ -79,7 +125,6 @@ public class MultiBattle : MonoBehaviour, IPatternable
                 return;
         }
     }
-
 
     private void OnAttack()
     {

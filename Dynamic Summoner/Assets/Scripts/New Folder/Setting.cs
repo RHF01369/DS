@@ -33,7 +33,8 @@ public class Setting : MonoBehaviour
     [SerializeField] BattleSetting battleSetting;
     [SerializeField] GameObject battleZone;
 
-    public static int deckCount { get; private set; }
+    public const int DeckCount = 4;
+    public const int MaxSize = 1024;
     public static Dictionary<int, SummonData> summonDataByNumber { get; private set; }
     public static float battleZoneXPosition { get; private set; }
     private SummonDeck summonDeck;
@@ -46,7 +47,6 @@ public class Setting : MonoBehaviour
         summonDeck.My = new List<UnitData>();
         summonDeck.Enemy = new List<UnitData>();
         summonDataByNumber = new Dictionary<int, SummonData>();
-        deckCount = 4;
     }
 
     private void Start()

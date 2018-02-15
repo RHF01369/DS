@@ -27,8 +27,14 @@ public static class MultiBattleDataManager
 {
     public static int executionDataOrder { get; private set; }
 
+    private static Client client;
     private static Queue<ExecutionData> executionDatas;
     private static List<ExecutionData> outOfSequenceDatas;
+
+    public static byte[] synchronizationData { get; set; }
+    public static bool canSynchronize { get; set; }
+
+
     public static EnemyDeckData enemyDeckData = new EnemyDeckData()
     {
         isReceived = false,
@@ -40,6 +46,18 @@ public static class MultiBattleDataManager
     {
         executionDatas = new Queue<ExecutionData>();
         outOfSequenceDatas = new List<ExecutionData>();
+
+        synchronizationData = new byte[Setting.MaxSize];
+        canSynchronize = false;
+    }
+
+    public static void Initialize(Client value)
+    {
+        client = value;
+        executionDatas.Clear();
+        outOfSequenceDatas.Clear();
+
+        canSynchronize = false;
     }
 
     public static int GetExecutionQueueCount()
@@ -63,6 +81,12 @@ public static class MultiBattleDataManager
 
         if (executionData.type == ExecutionType.Summon)
             Debug.Log(LogType.Test, "<Color=Green> isMine : " + executionData.isMine + "</Color>");
+
+        if(executionData.order > 0 && executionData.order % 10 == 0)
+        {
+            MultiBattle.SetSynchronized(false);
+            client.SendSynchronizationPacket();
+        }
 
         return executionData;
     }
