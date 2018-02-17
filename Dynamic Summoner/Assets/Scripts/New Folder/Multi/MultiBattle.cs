@@ -85,13 +85,13 @@ public class MultiBattle : MonoBehaviour, IPatternable
         Debug.Log(LogType.Test, "totlaNumber : " + totalNumber);
         Debug.Log(LogType.Test, "SpawnManager.CountUnits() : " + SpawnManager.CountUnits());
 
-        int number = -1;
+        int number = 1;
         foreach (Unit unit in SpawnManager.Units)
         {
-            if (totalNumber < SpawnManager.CountUnits() && totalNumber <= number++)
+            if (totalNumber < SpawnManager.CountUnits() && totalNumber < number++)
             {
-                Debug.Log(LogType.Test , "Synchronization Return");
-                return;
+                Debug.Log(LogType.Exception , "Synchronization break");
+                break;
             }
 
             if(number % 2 == 0)

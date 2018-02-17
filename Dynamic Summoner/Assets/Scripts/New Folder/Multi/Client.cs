@@ -216,7 +216,7 @@ public class Client
     {
         Debug.Log(LogType.Test, "<Color=Green> ReceiveSynchronization </Color>");
 
-        MultiBattleDataManager.synchronizationData = buffer;
+        Array.Copy(buffer, MultiBattleDataManager.synchronizationData, MultiBattleDataManager.synchronizationData.Length);
         MultiBattleDataManager.canSynchronize = true;
 
         CheckChainingPacket(buffer, ByteConverter.ToInt(buffer, PacketSizeStartIndex));
