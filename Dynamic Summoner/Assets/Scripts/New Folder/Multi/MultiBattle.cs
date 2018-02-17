@@ -81,18 +81,11 @@ public class MultiBattle : MonoBehaviour, IPatternable
 
         int totalNumber = ByteConverter.ToInt(syncData, 9);
 
-        
-        Debug.Log(LogType.Test, "totlaNumber : " + totalNumber);
-        Debug.Log(LogType.Test, "SpawnManager.CountUnits() : " + SpawnManager.CountUnits());
-
         int number = 1;
         foreach (Unit unit in SpawnManager.Units)
         {
             if (totalNumber < SpawnManager.CountUnits() && totalNumber < number++)
-            {
-                Debug.Log(LogType.Exception , "Synchronization break");
                 break;
-            }
 
             if(number % 2 == 0)
                 SynchronizeUnit(syncData, unit, number, 18);
@@ -107,14 +100,14 @@ public class MultiBattle : MonoBehaviour, IPatternable
 
     private void SynchronizeUnit(byte[] syncData, Unit unit, int number, int startIndex)
     {
-        bool isUsed = ByteConverter.ToBool(syncData, startIndex + (10 * number));
+        bool isUsed = ByteConverter.ToBool(syncData, startIndex + (10 * number - 2));
         if (!isUsed && !unit.IsUsed)
             return;
 
         if (!isUsed && unit.IsUsed)
             unit.SetIsUsed(false);
 
-        unit.Health = ByteConverter.ToFloat(syncData, (startIndex + 1) + (10 * number));
+        unit.Health = ByteConverter.ToFloat(syncData, (startIndex + 1) + (10 * number - 2));
     }
 
     private void Command(ExecutionData executionData)
