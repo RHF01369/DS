@@ -101,7 +101,8 @@ public class Client
     private void ClassifyReceivedPacket(byte[] buffer)
     {
         PacketType packetType = (PacketType)ByteConverter.ToInt(buffer, 1);
-        Debug.Log(LogType.Trace, "ClassifyReceivedPacket {0}", packetType);
+
+        Debug.Log(LogType.Test, "ClassifyReceivedPacket {0}", packetType);
 
         packetTypeToAction[packetType](buffer);
     }
@@ -213,6 +214,8 @@ public class Client
 
     private void ReceiveSynchronization(byte[] buffer)
     {
+        Debug.Log(LogType.Test, "<Color=Green> ReceiveSynchronization </Color>");
+
         MultiBattleDataManager.synchronizationData = buffer;
         MultiBattleDataManager.canSynchronize = true;
 

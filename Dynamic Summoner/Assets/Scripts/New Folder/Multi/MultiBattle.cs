@@ -128,7 +128,7 @@ public class MultiBattle : MonoBehaviour, IPatternable
 
     private void OnAttack()
     {
-        Debug.Log(LogType.Trace, "OnAttack");
+        Debug.Log(LogType.Test, "OnAttack");
 
         for (int index = 0; index < SpawnManager.Units.Count; index++)
         {
@@ -141,8 +141,6 @@ public class MultiBattle : MonoBehaviour, IPatternable
 
     private void AttackAsPlayer1(int index)
     {
-        Debug.Log(LogType.Test, "AttackAsPlaye1");
-
         if (!SpawnManager.Units[index].IsUsed)
             return;
 
@@ -152,8 +150,6 @@ public class MultiBattle : MonoBehaviour, IPatternable
 
     private void AttackAsPlayer2(int index)
     {
-        Debug.Log(LogType.Test, "AttackAsPlaye2");
-
         if (index % 2 == 1)
         {
             if (!SpawnManager.Units[index - 1].IsUsed)
