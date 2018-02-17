@@ -171,7 +171,7 @@ public class Client
         int startIndex = ExecutionOrderStartIndex;
         int executionOrder = ByteConverter.ToInt(buffer, ref startIndex);
         int playerNumber = ByteConverter.ToInt(buffer, ref startIndex);
-        Debug.Log(LogType.Test, "<Color=Blue> this playerNumber : " + this.playerNumber + "packet playerNumber : " + playerNumber);
+        Debug.Log(LogType.Test, "<Color=Blue> this playerNumber : " + this.playerNumber + " , packet playerNumber : " + playerNumber + "</Color>");
         bool isMine = this.playerNumber == playerNumber ? true : false;
 
         if (executionOrder < MultiBattleDataManager.executionDataOrder)

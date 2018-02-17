@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class MultiBattle : MonoBehaviour, IPatternable
@@ -14,7 +13,7 @@ public class MultiBattle : MonoBehaviour, IPatternable
     private void Awake()
     {
         instance = this;
-        isSynchronized = false;
+        isSynchronized = true;
     }
 
     public static void Initialize(Client client)
@@ -22,6 +21,7 @@ public class MultiBattle : MonoBehaviour, IPatternable
         instance.gameObject.SetActive(true);
         PatternLock.Battle = instance;
         instance.client = client;
+        instance.isSynchronized = true;
     }
 
     public static void SetSynchronized(bool value)
