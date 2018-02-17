@@ -81,6 +81,10 @@ public class MultiBattle : MonoBehaviour, IPatternable
 
         int totalNumber = ByteConverter.ToInt(syncData, 9);
 
+        
+        Debug.Log(LogType.Test, "totlaNumber : " + totalNumber);
+        Debug.Log(LogType.Test, "SpawnManager.CountUnits() : " + SpawnManager.CountUnits());
+
         int number = -1;
         foreach (Unit unit in SpawnManager.Units)
         {
