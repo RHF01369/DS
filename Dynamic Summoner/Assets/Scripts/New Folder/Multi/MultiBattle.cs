@@ -88,9 +88,9 @@ public class MultiBattle : MonoBehaviour, IPatternable
                 break;
 
             if(number % 2 == 0)
-                SynchronizeUnit(syncData, unit, number, 18);
+                SynchronizeUnit(syncData, unit, number - 2, 18);
             else
-                SynchronizeUnit(syncData, unit, number, 13);
+                SynchronizeUnit(syncData, unit, number - 3, 13);
 
         }
 
@@ -101,7 +101,7 @@ public class MultiBattle : MonoBehaviour, IPatternable
 
     private void SynchronizeUnit(byte[] syncData, Unit unit, int number, int startIndex)
     {
-        bool isUsed = ByteConverter.ToBool(syncData, startIndex + (10 * (number - 2)));
+        bool isUsed = ByteConverter.ToBool(syncData, startIndex + (5 * number));
         if (!isUsed && !unit.IsUsed)
             return;
 
@@ -109,12 +109,12 @@ public class MultiBattle : MonoBehaviour, IPatternable
         {
             unit.SetIsUsed(false);
             Debug.Log(LogType.Test, "Number : " + number);
-            Debug.Log(LogType.Test, "Index : " + startIndex + (10 * (number - 2)));
+            Debug.Log(LogType.Test, "Index : " + startIndex + (5 * number));
             Debug.Log(LogType.Test, "<Color=Blue> unit.SetIsUsed(false) </color>");
             return;
         }
 
-        unit.Health = ByteConverter.ToFloat(syncData, (startIndex + 1) + (10 * (number - 2)));
+        unit.Health = ByteConverter.ToFloat(syncData, (startIndex + 1) + (5 * number));
     }
 
     private void Command(ExecutionData executionData)
