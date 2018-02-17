@@ -107,6 +107,8 @@ public class MultiBattle : MonoBehaviour, IPatternable
         if (!isUsed && unit.IsUsed)
         {
             unit.SetIsUsed(false);
+            Debug.Log(LogType.Test, "Number : " + number);
+            Debug.Log(LogType.Test, "Index : " + startIndex + (10 * (number - 2)));
             Debug.Log(LogType.Test, "<Color=Blue> unit.SetIsUsed(false) </color>");
             return;
         }
