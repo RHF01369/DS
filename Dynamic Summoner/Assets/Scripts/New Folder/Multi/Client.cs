@@ -11,7 +11,7 @@ public enum PacketType
     Attack, Summon, Skill,
     EnemyDeckData, DeckDataRequest,
     ReadyComplete, BattleStart,
-    Synchronizaion,    
+    Synchronizaion,
 };
 
 public class Client
@@ -283,6 +283,8 @@ public class Client
 
     public void SendSynchronizationPacket()
     {
+        Debug.Log(LogType.Test, "<Color=red> SendSynchronizationPacket </Color>");
+
         int packetSize = 1;
         sendBuffer[0] = PacketStartNumber;
         ByteConverter.FromInt((int)PacketType.Synchronizaion, sendBuffer, ref packetSize);
@@ -302,7 +304,7 @@ public class Client
             ByteConverter.FromFloat(unit.Health, sendBuffer, ref packetSize);
         }
 
-        ByteConverter.FromInt(packetSize, sendBuffer, packetSize);
+        ByteConverter.FromInt(packetSize, sendBuffer, PacketSizeStartIndex);
         
         socket.Send(sendBuffer, packetSize, SocketFlags.None);
     }
