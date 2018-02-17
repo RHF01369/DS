@@ -49,13 +49,13 @@ public class MultiBattle : MonoBehaviour, IPatternable
                 StartCoroutine(StartBattle());
                 yield break;
             }
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(0f);
         }
     }
 
     private IEnumerator StartBattle()
     {
-        Debug.Log(LogType.Trace, "MultiBattle StartBattle");
+        Debug.Log(LogType.Test, "MultiBattle StartBattle");
 
         ExecutionData executionData;
         while(Setting.GameState == GameState.Battle)
@@ -77,7 +77,7 @@ public class MultiBattle : MonoBehaviour, IPatternable
 
     private void Synchronization(byte[] syncData)
     {
-        Debug.Log(LogType.Test, "Synchronization");
+        Debug.Log(LogType.Trace, "Synchronization");
 
         int totalNumber = ByteConverter.ToInt(syncData, 9);
 
@@ -107,10 +107,8 @@ public class MultiBattle : MonoBehaviour, IPatternable
 
         if (!isUsed && unit.IsUsed)
         {
-            unit.SetIsUsed(false);
-            Debug.Log(LogType.Test, "Number : " + number);
-            Debug.Log(LogType.Test, "Index : " + startIndex + (5 * number));
             Debug.Log(LogType.Test, "<Color=Blue> unit.SetIsUsed(false) </color>");
+            unit.SetIsUsed(false);
             return;
         }
 
