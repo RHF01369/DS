@@ -85,7 +85,10 @@ public class MultiBattle : MonoBehaviour, IPatternable
         foreach (Unit unit in SpawnManager.Units)
         {
             if (totalNumber < SpawnManager.CountUnits() && totalNumber <= number++)
+            {
+                Debug.Log(LogType.Test , "Synchronization Return");
                 return;
+            }
 
             if(number % 2 == 0)
                 SynchronizeUnit(syncData, unit, number, 18);
