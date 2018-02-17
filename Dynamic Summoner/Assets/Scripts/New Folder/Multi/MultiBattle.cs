@@ -100,14 +100,18 @@ public class MultiBattle : MonoBehaviour, IPatternable
 
     private void SynchronizeUnit(byte[] syncData, Unit unit, int number, int startIndex)
     {
-        bool isUsed = ByteConverter.ToBool(syncData, startIndex + (10 * number - 2));
+        bool isUsed = ByteConverter.ToBool(syncData, startIndex + (10 * (number - 2)));
         if (!isUsed && !unit.IsUsed)
             return;
 
         if (!isUsed && unit.IsUsed)
+        {
             unit.SetIsUsed(false);
+            Debug.Log(LogType.Test, "<Color=Blue> unit.SetIsUsed(false) </color>");
+            return;
+        }
 
-        unit.Health = ByteConverter.ToFloat(syncData, (startIndex + 1) + (10 * number - 2));
+        unit.Health = ByteConverter.ToFloat(syncData, (startIndex + 1) + (10 * (number - 2)));
     }
 
     private void Command(ExecutionData executionData)
