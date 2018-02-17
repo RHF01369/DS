@@ -84,13 +84,14 @@ public class MultiBattle : MonoBehaviour, IPatternable
         int number = 1;
         foreach (Unit unit in SpawnManager.Units)
         {
-            if (totalNumber < SpawnManager.CountUnits() && totalNumber < number++)
+            if (totalNumber < number++ && totalNumber < SpawnManager.CountUnits())
                 break;
 
             if(number % 2 == 0)
                 SynchronizeUnit(syncData, unit, number, 18);
             else
                 SynchronizeUnit(syncData, unit, number, 13);
+
         }
 
         isSynchronized = true;
