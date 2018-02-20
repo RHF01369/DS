@@ -129,7 +129,7 @@ public class Client
 
     private void ReceiveDeckDataRequest(byte[] buffer)
     {
-        Debug.Log(LogType.Trace, "ReceiveDeckDataRequest");
+        Debug.Log(LogType.Test, "ReceiveDeckDataRequest");
 
         SendDeckData();
 
@@ -138,7 +138,7 @@ public class Client
 
     private void ReceiveEnemyDeckData(byte[] buffer)
     {
-        Debug.Log(LogType.Trace, "ReceiveEnemyDeckData");
+        Debug.Log(LogType.Test, "ReceiveEnemyDeckData");
 
         int startIndex = 9;
         MultiBattleDataManager.enemyDeckData.enemyLevel = ByteConverter.ToInt(buffer, ref startIndex);
@@ -311,6 +311,8 @@ public class Client
 
     private void SendDeckData()
     {
+        Debug.Log(LogType.Test, "SendDeckData");
+
         int packetSize = 1;
         sendBuffer[0] = SocketInfo.PacketStartNumber;
         ByteConverter.FromInt((int)PacketType.EnemyDeckData, sendBuffer, ref packetSize);
