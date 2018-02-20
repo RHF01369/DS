@@ -4,6 +4,7 @@ using System.Net.Sockets;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Threading;
 
 public enum PacketType
 {
@@ -11,17 +12,25 @@ public enum PacketType
     Attack, Summon, Skill,
     EnemyDeckData, DeckDataRequest,
     ReadyComplete, BattleStart,
-    Synchronizaion,
+    Synchronizaion, ReconnectionSync,
+    Disconnection, Reconnection,
+    SynchronizationComplete,
 };
+
+public static class SocketInfo
+{
+    public const int PacketSizeStartIndex = 5;
+    public const int ExecutionOrderStartIndex = 9;
+    public const byte PacketStartNumber = 255;
+}
+
 
 public class Client
 {
-    private const int Port = 7000;
-    private const int PacketSizeStartIndex = 5;
-    private const int ExecutionOrderStartIndex = 9;
-    private const byte PacketStartNumber = 255;
+    private int Port = 7000;
 
     private Socket socket;
+    private IPEndPoint ipEndPoint;
 
     private byte[][] receiveBuffer;
     private byte[] chainingReceiveBuffer;
@@ -36,6 +45,8 @@ public class Client
     public Client()
     {
         socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        ipEndPoint = new IPEndPoint(IPAddress.Parse("192.168.0.179"), Port);
+
         receiveBuffer = new byte[2][];
         receiveBuffer[0] = new byte[Setting.MaxSize];
         receiveBuffer[1] = new byte[Setting.MaxSize];
@@ -52,14 +63,18 @@ public class Client
 
         packetTypeToAction = new Dictionary<PacketType, Action<byte[]>>()
         {
-            {PacketType.PlayerNumber,       ReceivePlayerNumber},
-            {PacketType.Attack,             ReceiveAttack},
-            {PacketType.Summon,             ReceiveSummon},
-            {PacketType.Skill,              ReceiveSkill},
-            {PacketType.DeckDataRequest,    ReceiveDeckDataRequest},
-            {PacketType.EnemyDeckData,      ReceiveEnemyDeckData },
-            {PacketType.BattleStart,        ReceiveBattleStart },
-            {PacketType.Synchronizaion,     ReceiveSynchronization },
+            { PacketType.PlayerNumber,               ReceivePlayerNumber                 },
+            { PacketType.Attack,                     ReceiveAttack                       },
+            { PacketType.Summon,                     ReceiveSummon                       },
+            { PacketType.Skill,                      ReceiveSkill                        },
+            { PacketType.DeckDataRequest,            ReceiveDeckDataRequest              },
+            { PacketType.EnemyDeckData,              ReceiveEnemyDeckData                },
+            { PacketType.BattleStart,                ReceiveBattleStart                  },
+            { PacketType.Synchronizaion,             ReceiveSynchronization              },
+            { PacketType.Disconnection,              ReceiveEnemyDisconnection           },
+            { PacketType.Reconnection,               ReceiveEnemyReconnection            },
+            { PacketType.ReconnectionSync,           ReceiveEnemyAllSynchronizationData  },
+            { PacketType.SynchronizationComplete,    ReceiveEnemySynchronizationComplete },
         };
 
         MultiBattleDataManager.Initialize(this);
@@ -85,17 +100,15 @@ public class Client
 
     public void Start()
     {   
-        IPEndPoint ipEndPoint = new IPEndPoint(IPAddress.Parse("192.168.0.179"), Port);
         socket.Connect(ipEndPoint);
-
 
         Setting.GameState = GameState.Battle;
         Setting.GameMode = GameMode.Multi;
 
         socket.ReceiveAsync(socketAsyncEventArgs0);
 
-        MultiBattle.Initialize(this);
-        MultiBattle.instance.StartMakingEnemyDeck();
+        MultiBattle.Instance.Initialize(this);
+        MultiBattle.Instance.StartMakingEnemyDeck();
     }
 
     private void ClassifyReceivedPacket(byte[] buffer)
@@ -111,7 +124,7 @@ public class Client
     {
         playerNumber = ByteConverter.ToInt(buffer, 9);
 
-        CheckChainingPacket(buffer, ByteConverter.ToInt(buffer, PacketSizeStartIndex));
+        CheckChainingPacket(buffer, ByteConverter.ToInt(buffer, SocketInfo.PacketSizeStartIndex));
     }
 
     private void ReceiveDeckDataRequest(byte[] buffer)
@@ -120,7 +133,7 @@ public class Client
 
         SendDeckData();
 
-        CheckChainingPacket(buffer, ByteConverter.ToInt(buffer, PacketSizeStartIndex));
+        CheckChainingPacket(buffer, ByteConverter.ToInt(buffer, SocketInfo.PacketSizeStartIndex));
     }
 
     private void ReceiveEnemyDeckData(byte[] buffer)
@@ -139,19 +152,19 @@ public class Client
 
         SendReadyCompletePacket();
 
-        CheckChainingPacket(buffer, ByteConverter.ToInt(buffer, PacketSizeStartIndex));
+        CheckChainingPacket(buffer, ByteConverter.ToInt(buffer, SocketInfo.PacketSizeStartIndex));
     }
 
     private void ReceiveBattleStart(byte[] buffer)
     {
         Debug.Log(LogType.Trace, "ReceiveBattleStart");
 
-        CheckChainingPacket(buffer, ByteConverter.ToInt(buffer, PacketSizeStartIndex));
+        CheckChainingPacket(buffer, ByteConverter.ToInt(buffer, SocketInfo.PacketSizeStartIndex));
     }
 
     private void ReceiveAttack(byte[] buffer)
     {
-        int executionOrder = ByteConverter.ToInt(buffer, ExecutionOrderStartIndex);
+        int executionOrder = ByteConverter.ToInt(buffer, SocketInfo.ExecutionOrderStartIndex);
 
         if (executionOrder < MultiBattleDataManager.executionDataOrder)
             return;
@@ -164,12 +177,12 @@ public class Client
 
         AddExecutionDataToManager(executionData);
 
-        CheckChainingPacket(buffer, ByteConverter.ToInt(buffer, PacketSizeStartIndex));
+        CheckChainingPacket(buffer, ByteConverter.ToInt(buffer, SocketInfo.PacketSizeStartIndex));
     }
 
     private void ReceiveSummon(byte[] buffer)
     {
-        int startIndex = ExecutionOrderStartIndex;
+        int startIndex = SocketInfo.ExecutionOrderStartIndex;
         int executionOrder = ByteConverter.ToInt(buffer, ref startIndex);
         int playerNumber = ByteConverter.ToInt(buffer, ref startIndex);
         Debug.Log(LogType.Test, "<Color=Blue> this playerNumber : " + this.playerNumber + " , packet playerNumber : " + playerNumber + "</Color>");
@@ -194,7 +207,7 @@ public class Client
 
         AddExecutionDataToManager(executionData);
 
-        CheckChainingPacket(buffer, ByteConverter.ToInt(buffer, PacketSizeStartIndex));
+        CheckChainingPacket(buffer, ByteConverter.ToInt(buffer, SocketInfo.PacketSizeStartIndex));
     }
 
     private float GetSummonXPosition(float xPos, bool isMine)
@@ -209,7 +222,7 @@ public class Client
     {
         //AddExecutionDataToManager(executionData);
 
-        CheckChainingPacket(buffer, ByteConverter.ToInt(buffer, PacketSizeStartIndex));
+        CheckChainingPacket(buffer, ByteConverter.ToInt(buffer, SocketInfo.PacketSizeStartIndex));
     }
 
     private void ReceiveSynchronization(byte[] buffer)
@@ -219,7 +232,7 @@ public class Client
         Array.Copy(buffer, MultiBattleDataManager.synchronizationData, MultiBattleDataManager.synchronizationData.Length);
         MultiBattleDataManager.canSynchronize = true;
 
-        CheckChainingPacket(buffer, ByteConverter.ToInt(buffer, PacketSizeStartIndex));
+        CheckChainingPacket(buffer, ByteConverter.ToInt(buffer, SocketInfo.PacketSizeStartIndex));
     }
 
     private void AddExecutionDataToManager(ExecutionData executionData)
@@ -231,9 +244,42 @@ public class Client
             MultiBattleDataManager.AddOutOfSequenceData(executionData);
     }
 
+    private void ReceiveEnemyDisconnection(byte[] buffer)
+    {
+        MultiBattle.Instance.enemyNetworkingState = EnemyNetworkingState.Disconnected;
+
+        CheckChainingPacket(buffer, ByteConverter.ToInt(buffer, SocketInfo.PacketSizeStartIndex));
+    }
+
+    private void ReceiveEnemyReconnection(byte[] buffer)
+    {
+        MultiBattle.Instance.enemyNetworkingState = EnemyNetworkingState.Reconnected;
+
+        CheckChainingPacket(buffer, ByteConverter.ToInt(buffer, SocketInfo.PacketSizeStartIndex));
+    }
+
+    private void ReceiveEnemyAllSynchronizationData(byte[] buffer)
+    {
+        Debug.Log(LogType.Test, "<Color=Green> ReceiveReconnectionSynchronization </Color>");
+        
+        Array.Copy(buffer, MultiBattleDataManager.synchronizationData, MultiBattleDataManager.synchronizationData.Length);
+
+        MultiBattle.Instance.enemyNetworkingState = EnemyNetworkingState.Synchronizating;
+
+        CheckChainingPacket(buffer, ByteConverter.ToInt(buffer, SocketInfo.PacketSizeStartIndex));
+    }
+
+    private void ReceiveEnemySynchronizationComplete(byte[] buffer)
+    {
+        MultiBattle.Instance.enemyNetworkingState = EnemyNetworkingState.Connected;
+        MultiBattle.Instance.myNetworkingState = MyNetworkingState.Connected;
+
+        CheckChainingPacket(buffer, ByteConverter.ToInt(buffer, SocketInfo.PacketSizeStartIndex));
+    }
+
     private void CheckChainingPacket(byte[] buffer, int startIndex)
     {
-        if (buffer[startIndex] != PacketStartNumber)
+        if (buffer[startIndex] != SocketInfo.PacketStartNumber)
         {
             Array.Clear(buffer, 0, buffer.Length);
             Array.Clear(chainingReceiveBuffer, 0, chainingReceiveBuffer.Length);
@@ -246,26 +292,27 @@ public class Client
         ClassifyReceivedPacket(chainingReceiveBuffer);
     }
 
+
     public void SendClientData(string nickName, int rankScore)
     {
         Debug.Log(LogType.Trace, "SendClientData");
 
         int packetSize = 1;
-        sendBuffer[0] = PacketStartNumber;
+        sendBuffer[0] = SocketInfo.PacketStartNumber;
         ByteConverter.FromInt((int)PacketType.ClientData, sendBuffer, ref packetSize);
         ByteConverter.FromInt(0, sendBuffer, ref packetSize);
         ByteConverter.FromString(nickName, sendBuffer, ref packetSize);
         ByteConverter.FromInt(rankScore, sendBuffer, ref packetSize);
 
-        ByteConverter.FromInt(packetSize, sendBuffer, PacketSizeStartIndex);
+        ByteConverter.FromInt(packetSize, sendBuffer, SocketInfo.PacketSizeStartIndex);
 
-        socket.Send(sendBuffer, packetSize, SocketFlags.None);
+        SendPacket(packetSize);
     }
 
-    public void SendDeckData()
+    private void SendDeckData()
     {
         int packetSize = 1;
-        sendBuffer[0] = PacketStartNumber;
+        sendBuffer[0] = SocketInfo.PacketStartNumber;
         ByteConverter.FromInt((int)PacketType.EnemyDeckData, sendBuffer, ref packetSize);
         ByteConverter.FromInt(0, sendBuffer, ref packetSize);
         ByteConverter.FromInt(UserData.Level, sendBuffer, ref packetSize);
@@ -276,9 +323,9 @@ public class Client
             ByteConverter.FromInt(Setting.MyDeck[num].Level, sendBuffer, ref packetSize);
         }
 
-        ByteConverter.FromInt(packetSize, sendBuffer, PacketSizeStartIndex);
+        ByteConverter.FromInt(packetSize, sendBuffer, SocketInfo.PacketSizeStartIndex);
 
-        socket.Send(sendBuffer, packetSize, SocketFlags.None);
+        SendPacket(packetSize);
     }
 
     public void SendSynchronizationPacket()
@@ -286,27 +333,15 @@ public class Client
         Debug.Log(LogType.Test, "<Color=red> SendSynchronizationPacket </Color>");
 
         int packetSize = 1;
-        sendBuffer[0] = PacketStartNumber;
+        sendBuffer[0] = SocketInfo.PacketStartNumber;
         ByteConverter.FromInt((int)PacketType.Synchronizaion, sendBuffer, ref packetSize);
         ByteConverter.FromInt(0, sendBuffer, ref packetSize);
-        ByteConverter.FromInt(SpawnManager.CountUnits(), sendBuffer, ref packetSize);
 
-        foreach (Unit unit in SpawnManager.Units)
-        {
-            ByteConverter.FromBool(unit.IsUsed, sendBuffer, ref packetSize);
+        SpawnManager.CopyUnitDatasToBuffer(sendBuffer, false, ref packetSize);
 
-            if (!unit.IsUsed)
-            {
-                packetSize += 4;
-                continue;
-            }
+        ByteConverter.FromInt(packetSize, sendBuffer, SocketInfo.PacketSizeStartIndex);
 
-            ByteConverter.FromFloat(unit.Health, sendBuffer, ref packetSize);
-        }
-
-        ByteConverter.FromInt(packetSize, sendBuffer, PacketSizeStartIndex);
-        
-        socket.Send(sendBuffer, packetSize, SocketFlags.None);
+        SendPacket(packetSize);
     }
 
     public void SendSummonPacket(int index)
@@ -314,7 +349,7 @@ public class Client
         Vector2 position = PositionResearcher.GetPosition(Setting.MyDeck[index], true);
 
         int packetSize = 1;
-        sendBuffer[0] = PacketStartNumber;
+        sendBuffer[0] = SocketInfo.PacketStartNumber;
         ByteConverter.FromInt((int)PacketType.Summon, sendBuffer, ref packetSize);
         ByteConverter.FromInt(0, sendBuffer, ref packetSize);
         ByteConverter.FromInt(0, sendBuffer, ref packetSize);
@@ -323,9 +358,9 @@ public class Client
         ByteConverter.FromFloat(position.x, sendBuffer, ref packetSize);
         ByteConverter.FromFloat(position.y, sendBuffer, ref packetSize);
 
-        ByteConverter.FromInt(packetSize, sendBuffer, PacketSizeStartIndex);
+        ByteConverter.FromInt(packetSize, sendBuffer, SocketInfo.PacketSizeStartIndex);
 
-        socket.Send(sendBuffer, packetSize, SocketFlags.None);
+        SendPacket(packetSize);
     }
 
     public void SendSkillPacket()
@@ -333,13 +368,80 @@ public class Client
         // 미구현
     }
 
-    public void SendReadyCompletePacket()
+    private void SendReadyCompletePacket()
     {
         int packetSize = 1;
-        sendBuffer[0] = PacketStartNumber;
+        sendBuffer[0] = SocketInfo.PacketStartNumber;
         ByteConverter.FromInt((int)PacketType.ReadyComplete, sendBuffer, ref packetSize);
-        ByteConverter.FromInt(packetSize + 4, sendBuffer, ref packetSize);
+        ByteConverter.FromInt(packetSize + sizeof(int), sendBuffer, ref packetSize);
 
-        socket.Send(sendBuffer, packetSize, SocketFlags.None);
+        SendPacket(packetSize);
+    }
+
+    
+
+    public void SendReconnectionSynchronization()
+    {
+        Debug.Log(LogType.Test, "<Color=red> SendReconnectionSynchronization </Color>");
+
+        int packetSize = 1;
+        sendBuffer[0] = SocketInfo.PacketStartNumber;
+        ByteConverter.FromInt((int)PacketType.ReconnectionSync, sendBuffer, ref packetSize);
+        ByteConverter.FromInt(0, sendBuffer, ref packetSize);
+
+        SpawnManager.CopyUnitDatasToBuffer(sendBuffer, true, ref packetSize);
+
+        MultiBattleDataManager.CopyExecutionDatasToBuffer(sendBuffer, ref packetSize);
+
+        ByteConverter.FromInt(packetSize, sendBuffer, SocketInfo.PacketSizeStartIndex);
+
+        SendPacket(packetSize);
+    }
+
+    public void SendEnemyCompleteSynchronization()
+    {
+        int packetSize = 1;
+        sendBuffer[0] = SocketInfo.PacketStartNumber;
+        ByteConverter.FromInt((int)PacketType.SynchronizationComplete, sendBuffer, ref packetSize);
+        ByteConverter.FromInt(packetSize + sizeof(int), sendBuffer, ref packetSize);
+
+        SendPacket(packetSize);
+    }
+
+
+    private void SendPacket(int packetSize)
+    {
+        try
+        {
+            socket.Send(sendBuffer, packetSize, SocketFlags.None);
+        }
+        catch (SocketException e)
+        {
+            Debug.Log(LogType.Exception, "SocketException");
+
+            MultiBattle.Instance.myNetworkingState = MyNetworkingState.Disconnected;
+            MultiBattleDataManager.ClearExecutionQueue();
+            MultiBattleDataManager.ClearOutOfSequenceDatas();
+            MultiBattleDataManager.ResetExecutionDataOrder();
+
+            TryReconnection();
+        }
+    }
+
+    private void TryReconnection()
+    {
+        try
+        {
+            socket.Connect(ipEndPoint);
+            socket.ReceiveAsync(socketAsyncEventArgs0);
+            SendClientData(UserInfo.nickName, UserData.TierScore);
+        }
+        catch(SocketException e)
+        {
+            Debug.Log(LogType.Exception, "TryReconnection");
+
+            Thread.Sleep(200);
+            TryReconnection();
+        }
     }
 }

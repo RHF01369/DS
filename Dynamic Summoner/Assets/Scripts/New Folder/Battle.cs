@@ -23,7 +23,7 @@ public class Battle : MonoBehaviour, IPatternable
     public static void StartBattle(GameMode mode)
     {
         Mode = mode;
-        //StartCoroutine(SummonEnemy());
+        instance.StartCoroutine(instance.SummonEnemy());
         instance.StartCoroutine(instance.StartAttack());
     }
 

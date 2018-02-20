@@ -75,6 +75,35 @@ public static class SpawnManager
         return spawns.Units.Count;
     }
 
+    public static void CopyUnitDatasToBuffer(byte[] buffer, bool isEnemyAllData, ref int packetSize)
+    {
+        ByteConverter.FromInt(CountUnits(), buffer, ref packetSize);
+
+        foreach (Unit unit in Units)
+        {
+            ByteConverter.FromBool(unit.IsUsed, buffer, ref packetSize);
+
+            if (!unit.IsUsed)
+            {
+                if (isEnemyAllData)
+                    packetSize += 16;
+                else
+                    packetSize += 4;
+
+                continue;
+            }
+
+            ByteConverter.FromFloat(unit.Health, buffer, ref packetSize);
+
+            if(isEnemyAllData)
+            {
+                ByteConverter.FromInt(unit.Data.Number, buffer, ref packetSize);
+                ByteConverter.FromFloat(unit.UnitObject.transform.position.x, buffer, ref packetSize);
+                ByteConverter.FromFloat(unit.UnitObject.transform.position.y, buffer, ref packetSize);
+            }
+        }
+    }
+
     #region Getter Setter
 
     public static UnitSpawn<Unit> Spawns { get { return spawns; } }

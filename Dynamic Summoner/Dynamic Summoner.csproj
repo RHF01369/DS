@@ -332,6 +332,7 @@
     <Compile Include="Assets\Scripts\New Folder\Multi\ByteConverter.cs" />
     <Compile Include="Assets\Scripts\New Folder\Multi\Client.cs" />
     <Compile Include="Assets\Scripts\New Folder\Multi\MultiBattle.cs" />
+    <Compile Include="Assets\Scripts\New Folder\Multi\MultiBattleDataManager.cs" />
     <Compile Include="Assets\Scripts\New Folder\Multi\PacketManager.cs" />
     <Compile Include="Assets\Scripts\New Folder\PatternLock\PatternLock.cs" />
     <Compile Include="Assets\Scripts\New Folder\PatternLock\PatternLockButton.cs" />
