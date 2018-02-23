@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Threading;
@@ -27,39 +26,34 @@ public static class SocketInfo
 
 public class Client
 {
-    private int Port = 7000;
+    private const int Port = 54322;
 
     private Socket socket;
     private IPEndPoint ipEndPoint;
 
-    private byte[][] receiveBuffer;
-    private byte[] chainingReceiveBuffer;
+    private byte[] receiveBuffer;
     private byte[] sendBuffer;
 
     public int playerNumber { get; private set; }
 
     private Dictionary<PacketType, Action<byte[]>> packetTypeToAction;
-    private SocketAsyncEventArgs socketAsyncEventArgs0;
-    private SocketAsyncEventArgs socketAsyncEventArgs1;
+    private SocketAsyncEventArgs socketAsyncEventArgs;
 
     public Client()
     {
-        socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-        ipEndPoint = new IPEndPoint(IPAddress.Parse("192.168.0.179"), Port);
+        IPHostEntry ipHostInfo = Dns.GetHostEntry("ec2-13-125-174-231.ap-northeast-2.compute.amazonaws.com");
+        IPAddress ipAddress = ipHostInfo.AddressList[0];
 
-        receiveBuffer = new byte[2][];
-        receiveBuffer[0] = new byte[Setting.MaxSize];
-        receiveBuffer[1] = new byte[Setting.MaxSize];
-        chainingReceiveBuffer = new byte[Setting.MaxSize];
+        socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        ipEndPoint = new IPEndPoint(ipAddress, Port);
+
+
+        receiveBuffer = new byte[Setting.MaxSize];
         sendBuffer = new byte[Setting.MaxSize];
 
-        socketAsyncEventArgs0 = new SocketAsyncEventArgs();
-        socketAsyncEventArgs0.SetBuffer(receiveBuffer[0], 0, receiveBuffer[0].Length);
-        socketAsyncEventArgs0.Completed += ReceivePacket0;
-
-        socketAsyncEventArgs1 = new SocketAsyncEventArgs();
-        socketAsyncEventArgs1.SetBuffer(receiveBuffer[1], 0, receiveBuffer[1].Length);
-        socketAsyncEventArgs1.Completed += ReceivePacket1;
+        socketAsyncEventArgs = new SocketAsyncEventArgs();
+        socketAsyncEventArgs.SetBuffer(receiveBuffer, 0, receiveBuffer.Length);
+        socketAsyncEventArgs.Completed += ReceivePacket;
 
         packetTypeToAction = new Dictionary<PacketType, Action<byte[]>>()
         {
@@ -80,32 +74,27 @@ public class Client
         MultiBattleDataManager.Initialize(this);
     }
 
-    private void ReceivePacket0(object sender, SocketAsyncEventArgs e)
+    private void ReceivePacket(object sender, SocketAsyncEventArgs e)
     {
         Debug.Log(LogType.Trace, "ReceivePacket-0 : {0} :", ByteConverter.ToInt(e.Buffer, 1));
 
         //throw new NotImplementedException();
-        socket.ReceiveAsync(socketAsyncEventArgs1);
-        ClassifyReceivedPacket(e.Buffer);
-    }
+        socket.ReceiveAsync(socketAsyncEventArgs);
 
-    private void ReceivePacket1(object sender, SocketAsyncEventArgs e)
-    {
-        Debug.Log(LogType.Trace, "ReceivePacket-1 : {0} :", ByteConverter.ToInt(e.Buffer, 1));
-
-        //throw new NotImplementedException();
-        socket.ReceiveAsync(socketAsyncEventArgs0);
-        ClassifyReceivedPacket(e.Buffer);
+        lock(receiveBuffer)
+            ClassifyReceivedPacket(e.Buffer);
     }
 
     public void Start()
     {   
         socket.Connect(ipEndPoint);
 
+        Debug.Log(LogType.Test, "Connect");
+
         Setting.GameState = GameState.Battle;
         Setting.GameMode = GameMode.Multi;
 
-        socket.ReceiveAsync(socketAsyncEventArgs0);
+        socket.ReceiveAsync(socketAsyncEventArgs);
 
         MultiBattle.Instance.Initialize(this);
         MultiBattle.Instance.StartMakingEnemyDeck();
@@ -174,6 +163,8 @@ public class Client
             type = ExecutionType.Attack,
             order = executionOrder,
         };
+
+        Debug.Log(LogType.Test, "Receive Attack  executionOrder : " + executionData.order);
 
         AddExecutionDataToManager(executionData);
 
@@ -282,14 +273,13 @@ public class Client
         if (buffer[startIndex] != SocketInfo.PacketStartNumber)
         {
             Array.Clear(buffer, 0, buffer.Length);
-            Array.Clear(chainingReceiveBuffer, 0, chainingReceiveBuffer.Length);
             return;
         }
 
-        Debug.Log(LogType.Trace, "CheckChainingPacket");
+        Debug.Log(LogType.Test, "<Color=Red> CheckChainingPacket </Color>");
 
-        Array.Copy(buffer, startIndex, chainingReceiveBuffer, 0, buffer.Length - startIndex);
-        ClassifyReceivedPacket(chainingReceiveBuffer);
+        Array.Copy(buffer, startIndex, buffer, 0, buffer.Length - startIndex);
+        ClassifyReceivedPacket(buffer);
     }
 
 
@@ -332,18 +322,23 @@ public class Client
 
     public void SendSynchronizationPacket()
     {
-        Debug.Log(LogType.Test, "<Color=red> SendSynchronizationPacket </Color>");
+        Debug.Log(LogType.Test, "<Color=red> Send SynchronizationPacket </Color>");
 
-        int packetSize = 1;
-        sendBuffer[0] = SocketInfo.PacketStartNumber;
-        ByteConverter.FromInt((int)PacketType.Synchronizaion, sendBuffer, ref packetSize);
-        ByteConverter.FromInt(0, sendBuffer, ref packetSize);
+        lock(sendBuffer)
+        {
+            int packetSize = 1;
+            sendBuffer[0] = SocketInfo.PacketStartNumber;
+            ByteConverter.FromInt((int)PacketType.Synchronizaion, sendBuffer, ref packetSize);
+            ByteConverter.FromInt(0, sendBuffer, ref packetSize);
 
-        SpawnManager.CopyUnitDatasToBuffer(sendBuffer, false, ref packetSize);
+            SpawnManager.CopyUnitDatasToBuffer(sendBuffer, false, ref packetSize);
 
-        ByteConverter.FromInt(packetSize, sendBuffer, SocketInfo.PacketSizeStartIndex);
+            ByteConverter.FromInt(packetSize, sendBuffer, SocketInfo.PacketSizeStartIndex);
 
-        SendPacket(packetSize);
+            Debug.Log(LogType.Test, "<Color=Blue> PacketSize : {0} </Color>", packetSize);
+
+            SendPacket(packetSize);
+        }
     }
 
     public void SendSummonPacket(int index)
@@ -435,7 +430,7 @@ public class Client
         try
         {
             socket.Connect(ipEndPoint);
-            socket.ReceiveAsync(socketAsyncEventArgs0);
+            socket.ReceiveAsync(socketAsyncEventArgs);
             SendClientData(UserInfo.nickName, UserData.TierScore);
         }
         catch(SocketException e)

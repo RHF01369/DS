@@ -70,18 +70,18 @@ public class MultiBattle : MonoBehaviour, IPatternable
         {
             yield return new WaitForSeconds(0.2f);
 
-            if (enemyNetworkingState == EnemyNetworkingState.Synchronizating)
-                SynchronizeEnemyBattleData(MultiBattleDataManager.synchronizationData);
+            //if (enemyNetworkingState == EnemyNetworkingState.Synchronizating)
+            //    SynchronizeEnemyBattleData(MultiBattleDataManager.synchronizationData);
 
-            if (enemyNetworkingState == EnemyNetworkingState.WaitingSynchronization || myNetworkingState == MyNetworkingState.Disconnected)
-                continue;
+            //if (enemyNetworkingState == EnemyNetworkingState.WaitingSynchronization || myNetworkingState == MyNetworkingState.Disconnected)
+            //    continue;
 
-            if (enemyNetworkingState == EnemyNetworkingState.Reconnected)
-            {
-                client.SendReconnectionSynchronization();
-                enemyNetworkingState = EnemyNetworkingState.WaitingSynchronization;
-                continue;
-            }
+            //if (enemyNetworkingState == EnemyNetworkingState.Reconnected)
+            //{
+            //    client.SendReconnectionSynchronization();
+            //    enemyNetworkingState = EnemyNetworkingState.WaitingSynchronization;
+            //    continue;
+            //}
 
             if ((enemyNetworkingState == EnemyNetworkingState.Connected) && (MultiBattleDataManager.GetExecutionQueueCount() <= 0 || !isSynchronized))
             {
